@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxyConfig>
+    <destinations>
+        <destination>
+            <name>test</name>
+            <destinationUrl>localhost</destinationUrl>
+            <destinationPort>8080</destinationPort>
+            <prefix>/test</prefix>
+            <asyncSupport>true</asyncSupport>
+            <scheme>http</scheme>
+        </destination>
+        <destination>
+            <name>stest</name>
+            <destinationUrl>localhost</destinationUrl>
+            <destinationPort>8181</destinationPort>
+            <prefix>/stest</prefix>
+            <asyncSupport>true</asyncSupport>
+            <scheme>https</scheme>
+        </destination>
+        <destination>
+            <name>nyt</name>
+            <destinationUrl>www.nytimes.com</destinationUrl>
+            <destinationPort>80</destinationPort>
+            <prefix>/nyt</prefix>
+            <asyncSupport>true</asyncSupport>
+            <scheme>http</scheme>
+        </destination>
+        <destination>
+            <name>google</name>
+            <destinationUrl>www.google.com</destinationUrl>
+            <destinationPort>80</destinationPort>
+            <prefix>/google</prefix>
+            <asyncSupport>true</asyncSupport>
+            <scheme>https</scheme>
+        </destination >
+        <destination>
+            <name>safariSsl</name>
+            <destinationUrl>ssl.safaribooks.com</destinationUrl> <!-- don't include scheme, just string form of url -->
+            <destinationPort>443</destinationPort>
+            <prefix>/sslSafari</prefix>
+            <asyncSupport>true</asyncSupport>
+            <scheme>https</scheme> <!-- take the scheme from the client  -->
+        </destination>
+        <destination>
+            <name>secureSafari</name>
+            <destinationUrl>techbus.safaribooksonline.com</destinationUrl>            
+            <destinationPort>80</destinationPort>
+            <prefix>/safari</prefix>            
+            <asyncSupport>true</asyncSupport>
+            <scheme>https</scheme>
+        </destination>                          
+    </destinations>
+    <maxThreads>10</maxThreads>
+    <maxConnections>10</maxConnections>
+    <idleTimeout>50000</idleTimeout>
+    <timeout>50000</timeout>
+    <requestBufferSize>8192</requestBufferSize>
+    <responseBufferSize>8192</responseBufferSize>
+    <hostURL>localhost</hostURL>
+    <hostPort>8080</hostPort>
+    <secureHostPort>443</secureHostPort>
+</proxyConfig>
