@@ -11,6 +11,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
@@ -21,24 +26,36 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
+import org.apache.http.HttpMessage;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.ParseException;
+import org.apache.http.config.MessageConstraints;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
+import org.apache.http.impl.io.HttpTransportMetricsImpl;
+import org.apache.http.impl.nio.codecs.AbstractMessageParser;
+import org.apache.http.impl.nio.codecs.DefaultHttpResponseParser;
+import org.apache.http.impl.nio.codecs.DefaultHttpResponseWriter;
 import org.apache.http.impl.nio.reactor.SessionInputBufferImpl;
 import org.apache.http.impl.nio.reactor.SessionOutputBufferImpl;
+import org.apache.http.message.LineParser;
 import org.apache.http.nio.NHttpMessageParser;
+import org.apache.http.nio.NHttpMessageParserFactory;
 import org.apache.http.nio.NHttpMessageWriter;
 import org.apache.http.nio.NHttpMessageWriterFactory;
 import org.apache.http.nio.reactor.SessionInputBuffer;
 import org.apache.http.nio.reactor.SessionOutputBuffer;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
 /**
  *
  */
-public class ResponseRewriter implements HttpResponseInterceptor {
+public class ResponseRewriter extends AbstractMessageParser implements HttpResponseInterceptor {
 
     /**
      * The location for this server, used when we rewrite absolute URIs
@@ -83,27 +100,85 @@ public class ResponseRewriter implements HttpResponseInterceptor {
      */
     private static final Logger logger = Logger.getLogger(ResponseRewriter.class.getName());
 
-    public ResponseRewriter() {
+    public ResponseRewriter(SessionInputBuffer buffer, LineParser lineParser, HttpParams params) {
+        super(buffer, lineParser, params);
         this.ownHostName = "";
         this.contextPath = "";
         this.proxyDomains = null;
-
     }
 
-    public ResponseRewriter(Domains proxyDomains) {
+//    public ResponseRewriter() {
+//        this.ownHostName = "";
+//        this.contextPath = "";
+//        this.proxyDomains = null;
+//
+//    }
+//
+//    public ResponseRewriter(Domains proxyDomains) {
+//
+//        this.contextPath = proxyDomains.getProxyConfig().getHostURL()
+//                + ":" + proxyDomains.getProxyConfig().getHostPort();
+//        this.proxyDomains = proxyDomains;
+//        this.ownHostName = proxyDomains.getProxyConfig().getHostURL();
+//
+////        this.streamRewriter = new StreamRewriter(null, ownHostName, ownHostName, contextPath);//
+////        outWriter = new PrintWriter(new ByteArrayOutputStream());  //@todo this needs to be tied in//
+////        originalWriter = new PrintWriter(new ByteArrayOutputStream()); //@todo this needs to be tied in    
+//    }
+    private HttpEntity rewriteMessageBody(HttpResponse response, HttpContext context) {
 
-        this.contextPath = proxyDomains.getProxyConfig().getHostURL()
-                + ":" + proxyDomains.getProxyConfig().getHostPort();
-        this.proxyDomains = proxyDomains;
-        this.ownHostName = proxyDomains.getProxyConfig().getHostURL();
+        HttpEntity entity = null;
 
-//        this.streamRewriter = new StreamRewriter(null, ownHostName, ownHostName, contextPath);//
-//        outWriter = new PrintWriter(new ByteArrayOutputStream());  //@todo this needs to be tied in//
-//        originalWriter = new PrintWriter(new ByteArrayOutputStream()); //@todo this needs to be tied in    
+        return entity;
     }
 
     @Override
     public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+
+        HttpEntity e = response.getEntity();
+        ByteBuffer bb = ByteBuffer.wrap(EntityUtils.toByteArray(e));
+
+        ReadableByteChannel rbc = Channels.newChannel(e.getContent());
+        
+
+        SessionInputBuffer inbuffer = new SessionInputBufferImpl(1024);
+        SessionOutputBuffer outbuffer = new SessionOutputBufferImpl(8 * 1024);
+
+        CharArrayBuffer linebuf = new CharArrayBuffer(1024);
+        boolean endOfStream = false;
+        int bytesRead = inbuffer.fill(rbc);
+
+        
+        
+        NHttpMessageParser<HttpResponse> responseParser = new DefaultHttpResponseParser(inbuffer);
+        
+        HttpResponse parsedResponse = responseParser.parse();
+        
+        NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outbuffer);
+        
+        responseWriter.write(response);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        if (bytesRead == -1) {
+            endOfStream = true;
+        }
+        
+        if(inbuffer.readLine(linebuf, endOfStream)){
+            
+            
+            
+            outbuffer.writeLine(linebuf);
+        }
 
 //        DefaultBHttpClientConnection outConn
 //                = (DefaultBHttpClientConnection) context.getAttribute(HTTP_OUT_CONN);
@@ -111,14 +186,15 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 //        Destination target = this.proxyDomains.matchRemoteToTarget(remoteAddress);
 //        if (target != null) {
         //check if response contains an entity body
-        NHttpMessageWriterFactory<HttpResponse> responseWriterFactory = new NHttpMessageWriterFactory<HttpResponse>() {
-            @Override
-            public NHttpMessageWriter<HttpResponse> create(SessionOutputBuffer buffer) {
-                NHttpMessageWriter<HttpResponse> customWriter = null;
-                return customWriter;
-            }
-        };
-
+//        NHttpMessageParser<HttpResponse> responseParser = new DefaultHttpResponseParser(inputBuffer);
+//        
+//        
+//        
+//        HttpResponse updatedResponse = responseParser.parse();
+//        
+//        NHttpMessageWriter responseWriter = new DefaultHttpResponseWriter(outputBuffer);
+//        responseWriter.write(response);
+//        parser.fillBuffer(response.getEntity().getContent());
 //        EntityUtils.consume(entityBody);
 //        if (entityBody != null && entityBody.getContentLength() > 0) {
 //
@@ -142,6 +218,11 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 //                    remoteAddress.getHostName());
 //            throw new IOException("unable to proxy the response "
 //                    + "from the remote server: " + target.getName());
+    }
+
+    @Override
+    protected HttpMessage createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**
