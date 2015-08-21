@@ -125,8 +125,14 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 ////        outWriter = new PrintWriter(new ByteArrayOutputStream());  //@todo this needs to be tied in//
 ////        originalWriter = new PrintWriter(new ByteArrayOutputStream()); //@todo this needs to be tied in    
 //    }
-    private HttpEntity rewriteMessageBody(HttpResponse response, HttpContext context) {
-
+    private HttpEntity rewriteMessageBody(SessionInputBuffer inputBuffer) {
+        int COMPLETED = 2;
+        int READ_HEADERS = 1;
+        int READ_HEAD_LINE = 0;        
+        CharArrayBuffer lineBuffer;
+        LineParser lineParser;        
+        int state;
+        boolean endOfStream;                        
         HttpEntity entity = null;
 
         return entity;
@@ -137,55 +143,24 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 
         HttpEntity e = response.getEntity();
         ByteBuffer bb = ByteBuffer.wrap(EntityUtils.toByteArray(e));
-
         ReadableByteChannel rbc = Channels.newChannel(e.getContent());
-        
-
         SessionInputBuffer inbuffer = new SessionInputBufferImpl(1024);
         SessionOutputBuffer outbuffer = new SessionOutputBufferImpl(8 * 1024);
-
-        CharArrayBuffer linebuf = new CharArrayBuffer(1024);
-        boolean endOfStream = false;
         int bytesRead = inbuffer.fill(rbc);
 
         
-        
-        NHttpMessageParser<HttpResponse> responseParser = new DefaultHttpResponseParser(inbuffer);
-        
-        HttpResponse parsedResponse = responseParser.parse();
-        
+        response.setEntity(this.rewriteMessageBody(inbuffer));
         NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outbuffer);
-        
         responseWriter.write(response);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        if (bytesRead == -1) {
-            endOfStream = true;
-        }
-        
-        if(inbuffer.readLine(linebuf, endOfStream)){
-            
-            
-            
-            outbuffer.writeLine(linebuf);
-        }
+
+    }
 
 //        DefaultBHttpClientConnection outConn
 //                = (DefaultBHttpClientConnection) context.getAttribute(HTTP_OUT_CONN);
 //        InetAddress remoteAddress = outConn.getRemoteAddress();
 //        Destination target = this.proxyDomains.matchRemoteToTarget(remoteAddress);
 //        if (target != null) {
-        //check if response contains an entity body
+    //check if response contains an entity body
 //        NHttpMessageParser<HttpResponse> responseParser = new DefaultHttpResponseParser(inputBuffer);
 //        
 //        
@@ -207,10 +182,10 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 //        }
 //            ByteArrayInputStream incomingStream = (ByteArrayInputStream) entityBody.getContent();
 //            OutputStream outgoingStream = this.rewriteEmbeddedLinks(incomingStream, target);
-        /**
-         * may need to write the outputStream/entity to the serverConnection in
-         * the httpContext...
-         */
+    /**
+     * may need to write the outputStream/entity to the serverConnection in the
+     * httpContext...
+     */
 //            entityBody.writeTo(outgoingStream);
 //        } else {
 //            logger.log(Level.SEVERE,
@@ -218,8 +193,6 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 //                    remoteAddress.getHostName());
 //            throw new IOException("unable to proxy the response "
 //                    + "from the remote server: " + target.getName());
-    }
-
     @Override
     protected HttpMessage createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
         throw new UnsupportedOperationException("Not supported yet.");
