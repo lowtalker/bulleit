@@ -24,6 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpMessage;
@@ -31,15 +33,20 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.ParseException;
+import org.apache.http.client.entity.GzipDecompressingEntity;
+import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.MessageConstraints;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
+import org.apache.http.impl.io.ChunkedInputStream;
 import org.apache.http.impl.io.HttpTransportMetricsImpl;
 import org.apache.http.impl.nio.codecs.AbstractMessageParser;
+import org.apache.http.impl.nio.codecs.ChunkDecoder;
 import org.apache.http.impl.nio.codecs.DefaultHttpResponseParser;
 import org.apache.http.impl.nio.codecs.DefaultHttpResponseWriter;
 import org.apache.http.impl.nio.reactor.SessionInputBufferImpl;
 import org.apache.http.impl.nio.reactor.SessionOutputBufferImpl;
+import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.LineParser;
 import org.apache.http.nio.NHttpMessageParser;
 import org.apache.http.nio.NHttpMessageParserFactory;
@@ -47,6 +54,7 @@ import org.apache.http.nio.NHttpMessageWriter;
 import org.apache.http.nio.NHttpMessageWriterFactory;
 import org.apache.http.nio.reactor.SessionInputBuffer;
 import org.apache.http.nio.reactor.SessionOutputBuffer;
+import org.apache.http.nio.util.DirectByteBufferAllocator;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.CharArrayBuffer;
@@ -107,12 +115,13 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
         this.proxyDomains = null;
     }
 
-//    public ResponseRewriter() {
-//        this.ownHostName = "";
-//        this.contextPath = "";
-//        this.proxyDomains = null;
-//
-//    }
+    public ResponseRewriter() {
+        super(new SessionInputBufferImpl(4048), BasicLineParser.INSTANCE, ConnectionConfig.DEFAULT.getMessageConstraints());
+        this.ownHostName = "";
+        this.contextPath = "";
+        this.proxyDomains = null;
+
+    }
 //
 //    public ResponseRewriter(Domains proxyDomains) {
 //
@@ -125,14 +134,15 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 ////        outWriter = new PrintWriter(new ByteArrayOutputStream());  //@todo this needs to be tied in//
 ////        originalWriter = new PrintWriter(new ByteArrayOutputStream()); //@todo this needs to be tied in    
 //    }
+
     private HttpEntity rewriteMessageBody(SessionInputBuffer inputBuffer) {
         int COMPLETED = 2;
         int READ_HEADERS = 1;
-        int READ_HEAD_LINE = 0;        
+        int READ_HEAD_LINE = 0;
         CharArrayBuffer lineBuffer;
-        LineParser lineParser;        
+        LineParser lineParser;
         int state;
-        boolean endOfStream;                        
+        boolean endOfStream;
         HttpEntity entity = null;
 
         return entity;
@@ -142,17 +152,96 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
     public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
 
         HttpEntity e = response.getEntity();
-        ByteBuffer bb = ByteBuffer.wrap(EntityUtils.toByteArray(e));
-        ReadableByteChannel rbc = Channels.newChannel(e.getContent());
-        SessionInputBuffer inbuffer = new SessionInputBufferImpl(1024);
-        SessionOutputBuffer outbuffer = new SessionOutputBufferImpl(8 * 1024);
-        int bytesRead = inbuffer.fill(rbc);
 
-        
-        response.setEntity(this.rewriteMessageBody(inbuffer));
-        NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outbuffer);
-        responseWriter.write(response);
+        if (e != null) {
+//            System.out.println("******************************** ENTITY NOT NULL ");
+            GzipDecompressingEntity gde = new GzipDecompressingEntity(e);
+            Header contentTypeHeader = gde.getContentType();
+           
 
+            if (contentTypeHeader != null && contentTypeHeader.getValue().contains("text/html")) {
+                System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& contentTypeHeader: " + contentTypeHeader.getValue());
+                gde.getContent();
+            }
+            
+
+//            StringBuffer contentBuilder = new StringBuffer();
+//            InputStream is = gde.getContent();
+//            while (is.available() != 0) {
+//                byte[] buf = new byte[128];
+//                is.read(buf);
+//                contentBuilder.append(new String(buf, "UTF-8"));
+//
+//            }
+////            is.close();
+//            System.out.println("########################### content: \n"
+//                    + contentBuilder.toString());
+//            ByteBuffer bb = ByteBuffer.wrap(EntityUtils.toByteArray(e));
+//            byte[] originalContentLength = EntityUtils.toByteArray(e);
+//            if(originalContentLength != null && originalContentLength.length > 0){
+//            System.out.println("******************************** contentLength: " + originalContentLength.length );
+//            }
+//            byte[] content = getContent(EntityUtils.toByteArray(e));
+//            if (content != null && content.length > 0) {
+////                InputStream byteIS = new ByteArrayInputStream(content);
+//                System.out.println("");
+//                SessionInputBufferImpl contentBuffer = new SessionInputBufferImpl(content.length);
+//                HttpTransportMetricsImpl htm = new HttpTransportMetricsImpl();
+//                ReadableByteChannel rbc = Channels.newChannel(e.getContent());
+//
+//                ChunkDecoder cd = new ChunkDecoder(rbc, contentBuffer, htm);
+//                ByteBuffer entityByteBuffer = ByteBuffer.allocate(content.length);
+//
+//                while (!cd.isCompleted()) {
+//                    cd.read(entityByteBuffer);
+//                }
+//
+//                GZIPInputStream gzipIS = new GZIPInputStream(new ByteArrayInputStream(entityByteBuffer.array()));
+//
+//                //ChunkedInputStream chunkedIS = new ChunkedInputStream(contentBuffer);
+//                StringBuffer contentBuilder = new StringBuffer();
+//                while (gzipIS.available() != 0) {
+//                    byte[] buf = new byte[128];
+//                    gzipIS.read(buf);
+//                    contentBuilder.append(new String(buf, "UTF-8"));
+//                }
+//                gzipIS.close();
+//                String contentString = contentBuilder.toString();
+//            }
+        }
+//        NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outbuffer);
+//        responseWriter.write(response);
+//        ReadableByteChannel rbc = Channels.newChannel(e.getContent());        
+//        SessionInputBuffer inbuffer = new SessionInputBufferImpl(1024);
+//        SessionOutputBuffer outbuffer = new SessionOutputBufferImpl(8 * 1024);
+//        int bytesRead = inbuffer.fill(rbc);
+//
+//        response.setEntity(this.rewriteMessageBody(inbuffer));
+//        
+//        responseWriter.write(response);
+    }
+
+    private byte[] getContent(byte[] message) {
+        int start = -1;
+        byte[] content = null;
+
+        for (int i = 0; i < message.length; i++) {
+            if (start >= 0) {
+                content[i - start] = message[i];
+                continue;
+            }
+            System.out.println((char) message[i]);
+            if (message[i]
+                    == (byte) 13 && message[i + 1]
+                    == (byte) 10 && message[i + 2]
+                    == (byte) 13 && message[i + 3]
+                    == (byte) 10) {
+                start = i + 4;
+                content = new byte[message.length - (i + 4)];
+                i += 3;
+            }
+        }
+        return content;
     }
 
 //        DefaultBHttpClientConnection outConn

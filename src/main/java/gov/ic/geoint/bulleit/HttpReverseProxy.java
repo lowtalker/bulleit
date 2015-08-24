@@ -86,7 +86,7 @@ public class HttpReverseProxy {
                             new ResponseDate(),
                             new ResponseServer("Test/1.1"),
                             new ResponseContent(), 
-//                            new ResponseRewriter(),
+                            new ResponseRewriter(),
                             new ResponseRedirectProcessor(),
                             new ResponseConnControl()});
         
