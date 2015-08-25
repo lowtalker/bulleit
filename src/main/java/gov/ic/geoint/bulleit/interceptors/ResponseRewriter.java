@@ -155,27 +155,32 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 
         if (e != null) {
 //            System.out.println("******************************** ENTITY NOT NULL ");
-            GzipDecompressingEntity gde = new GzipDecompressingEntity(e);
-            Header contentTypeHeader = gde.getContentType();
-           
+//            GzipDecompressingEntity gde = new GzipDecompressingEntity(e);
+//            Header contentTypeHeader = gde.getContentType();
+//            CharArrayBuffer charBuffer = new CharArrayBuffer(2048);
+            //&& contentTypeHeader.getValue().contains("text/html")
 
-            if (contentTypeHeader != null && contentTypeHeader.getValue().contains("text/html")) {
-                System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& contentTypeHeader: " + contentTypeHeader.getValue());
-                gde.getContent();
-            }
-            
+            if (e.getContentLength() > 0) {
+                Header h = e.getContentType();
+                String contentTypeHeaderValue = h.getValue();
 
-//            StringBuffer contentBuilder = new StringBuffer();
-//            InputStream is = gde.getContent();
-//            while (is.available() != 0) {
-//                byte[] buf = new byte[128];
-//                is.read(buf);
-//                contentBuilder.append(new String(buf, "UTF-8"));
+                if (contentTypeHeaderValue.contains("text/html")) {
+                    System.out.println("####################33 " + contentTypeHeaderValue);
+                }
+
+//                InputStream is = gde.getContent();
+//                StringBuffer contentBuilder = new StringBuffer();
+//                while (is.available() != 0) {
+//                    byte[] buf = new byte[128];
+//                    is.read(buf);
+//                    contentBuilder.append(new String(buf, "UTF-8"));
 //
-//            }
-////            is.close();
-//            System.out.println("########################### content: \n"
+//                }
+//                is.close();
+//                 System.out.println("########################### content: \n"
 //                    + contentBuilder.toString());
+            }
+
 //            ByteBuffer bb = ByteBuffer.wrap(EntityUtils.toByteArray(e));
 //            byte[] originalContentLength = EntityUtils.toByteArray(e);
 //            if(originalContentLength != null && originalContentLength.length > 0){
