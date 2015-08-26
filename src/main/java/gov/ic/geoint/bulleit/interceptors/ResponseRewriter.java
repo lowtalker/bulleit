@@ -32,7 +32,9 @@ import org.apache.http.HttpMessage;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpVersion;
 import org.apache.http.ParseException;
+import org.apache.http.StatusLine;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.MessageConstraints;
@@ -41,12 +43,18 @@ import org.apache.http.impl.DefaultBHttpClientConnection;
 import org.apache.http.impl.io.ChunkedInputStream;
 import org.apache.http.impl.io.HttpTransportMetricsImpl;
 import org.apache.http.impl.nio.codecs.AbstractMessageParser;
+import org.apache.http.impl.nio.codecs.AbstractMessageWriter;
 import org.apache.http.impl.nio.codecs.ChunkDecoder;
 import org.apache.http.impl.nio.codecs.DefaultHttpResponseParser;
 import org.apache.http.impl.nio.codecs.DefaultHttpResponseWriter;
 import org.apache.http.impl.nio.reactor.SessionInputBufferImpl;
 import org.apache.http.impl.nio.reactor.SessionOutputBufferImpl;
+import org.apache.http.io.HttpMessageWriter;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicLineFormatter;
 import org.apache.http.message.BasicLineParser;
+import org.apache.http.message.BasicStatusLine;
+import org.apache.http.message.LineFormatter;
 import org.apache.http.message.LineParser;
 import org.apache.http.nio.NHttpMessageParser;
 import org.apache.http.nio.NHttpMessageParserFactory;
@@ -63,7 +71,7 @@ import org.apache.http.util.EntityUtils;
 /**
  *
  */
-public class ResponseRewriter extends AbstractMessageParser implements HttpResponseInterceptor {
+public class ResponseRewriter implements HttpResponseInterceptor {
 
     /**
      * The location for this server, used when we rewrite absolute URIs
@@ -109,14 +117,14 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
     private static final Logger logger = Logger.getLogger(ResponseRewriter.class.getName());
 
     public ResponseRewriter(SessionInputBuffer buffer, LineParser lineParser, HttpParams params) {
-        super(buffer, lineParser, params);
+//        super(buffer, lineParser, params);
         this.ownHostName = "";
         this.contextPath = "";
         this.proxyDomains = null;
     }
 
     public ResponseRewriter() {
-        super(new SessionInputBufferImpl(4048), BasicLineParser.INSTANCE, ConnectionConfig.DEFAULT.getMessageConstraints());
+//        super(new SessionInputBufferImpl(4048), BasicLineParser.INSTANCE, ConnectionConfig.DEFAULT.getMessageConstraints());
         this.ownHostName = "";
         this.contextPath = "";
         this.proxyDomains = null;
@@ -130,100 +138,49 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
 //        this.proxyDomains = proxyDomains;
 //        this.ownHostName = proxyDomains.getProxyConfig().getHostURL();
 //
-////        this.streamRewriter = new StreamRewriter(null, ownHostName, ownHostName, contextPath);//
-////        outWriter = new PrintWriter(new ByteArrayOutputStream());  //@todo this needs to be tied in//
-////        originalWriter = new PrintWriter(new ByteArrayOutputStream()); //@todo this needs to be tied in    
-//    }
-
-    private HttpEntity rewriteMessageBody(SessionInputBuffer inputBuffer) {
-        int COMPLETED = 2;
-        int READ_HEADERS = 1;
-        int READ_HEAD_LINE = 0;
-        CharArrayBuffer lineBuffer;
-        LineParser lineParser;
-        int state;
-        boolean endOfStream;
-        HttpEntity entity = null;
-
-        return entity;
-    }
 
     @Override
     public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
-
+//         GzipDecompressingEntity gde = new GzipDecompressingEntity(e);
         HttpEntity e = response.getEntity();
-
+        String reasonPhrase = response.getStatusLine().getReasonPhrase();
+        int statusCode = response.getStatusLine().getStatusCode();
+        CharArrayBuffer entityBuffer = new CharArrayBuffer(20000);
         if (e != null) {
-//            System.out.println("******************************** ENTITY NOT NULL ");
-//            GzipDecompressingEntity gde = new GzipDecompressingEntity(e);
-//            Header contentTypeHeader = gde.getContentType();
-//            CharArrayBuffer charBuffer = new CharArrayBuffer(2048);
-            //&& contentTypeHeader.getValue().contains("text/html")
 
-            if (e.getContentLength() > 0) {
-                Header h = e.getContentType();
-                String contentTypeHeaderValue = h.getValue();
+            NHttpMessageParserFactory<HttpResponse> responseParserFactory = new NHttpMessageParserFactory<HttpResponse>() {
+                @Override
+                public NHttpMessageParser<HttpResponse> create(SessionInputBuffer buffer, MessageConstraints constraints) {
+                    BasicLineParser lineParser = BasicLineParser.INSTANCE;
+                    NHttpMessageParser<HttpResponse> customParser = new AbstractMessageParser<HttpResponse>(buffer, lineParser, constraints) {
 
-                if (contentTypeHeaderValue.contains("text/html")) {
-                    System.out.println("####################33 " + contentTypeHeaderValue);
+                        @Override
+                        protected HttpResponse createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
+
+                            /*
+                            
+                             parse entity here...
+                             */
+                            System.out.println("message: " + buffer.toString());
+                            entityBuffer.append(buffer);
+                            HttpResponse parsedResponse = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, statusCode, reasonPhrase));
+
+                            return parsedResponse;
+                        }
+                    };
+                    return customParser;
                 }
+            };
 
-//                InputStream is = gde.getContent();
-//                StringBuffer contentBuilder = new StringBuffer();
-//                while (is.available() != 0) {
-//                    byte[] buf = new byte[128];
-//                    is.read(buf);
-//                    contentBuilder.append(new String(buf, "UTF-8"));
-//
-//                }
-//                is.close();
-//                 System.out.println("########################### content: \n"
-//                    + contentBuilder.toString());
-            }
+            SessionInputBufferImpl inputBuffer = new SessionInputBufferImpl(8 * 1024);
+            NHttpMessageParser<HttpResponse> responseParser = responseParserFactory.create(inputBuffer, MessageConstraints.DEFAULT);
+            HttpResponse parsedResponse = responseParser.parse();
 
-//            ByteBuffer bb = ByteBuffer.wrap(EntityUtils.toByteArray(e));
-//            byte[] originalContentLength = EntityUtils.toByteArray(e);
-//            if(originalContentLength != null && originalContentLength.length > 0){
-//            System.out.println("******************************** contentLength: " + originalContentLength.length );
-//            }
-//            byte[] content = getContent(EntityUtils.toByteArray(e));
-//            if (content != null && content.length > 0) {
-////                InputStream byteIS = new ByteArrayInputStream(content);
-//                System.out.println("");
-//                SessionInputBufferImpl contentBuffer = new SessionInputBufferImpl(content.length);
-//                HttpTransportMetricsImpl htm = new HttpTransportMetricsImpl();
-//                ReadableByteChannel rbc = Channels.newChannel(e.getContent());
-//
-//                ChunkDecoder cd = new ChunkDecoder(rbc, contentBuffer, htm);
-//                ByteBuffer entityByteBuffer = ByteBuffer.allocate(content.length);
-//
-//                while (!cd.isCompleted()) {
-//                    cd.read(entityByteBuffer);
-//                }
-//
-//                GZIPInputStream gzipIS = new GZIPInputStream(new ByteArrayInputStream(entityByteBuffer.array()));
-//
-//                //ChunkedInputStream chunkedIS = new ChunkedInputStream(contentBuffer);
-//                StringBuffer contentBuilder = new StringBuffer();
-//                while (gzipIS.available() != 0) {
-//                    byte[] buf = new byte[128];
-//                    gzipIS.read(buf);
-//                    contentBuilder.append(new String(buf, "UTF-8"));
-//                }
-//                gzipIS.close();
-//                String contentString = contentBuilder.toString();
-//            }
+            SessionOutputBufferImpl outputBuffer = new SessionOutputBufferImpl(8 * 1024);
+            NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outputBuffer);
+            responseWriter.write(parsedResponse);
+
         }
-//        NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outbuffer);
-//        responseWriter.write(response);
-//        ReadableByteChannel rbc = Channels.newChannel(e.getContent());        
-//        SessionInputBuffer inbuffer = new SessionInputBufferImpl(1024);
-//        SessionOutputBuffer outbuffer = new SessionOutputBufferImpl(8 * 1024);
-//        int bytesRead = inbuffer.fill(rbc);
-//
-//        response.setEntity(this.rewriteMessageBody(inbuffer));
-//        
-//        responseWriter.write(response);
     }
 
     private byte[] getContent(byte[] message) {
@@ -247,49 +204,6 @@ public class ResponseRewriter extends AbstractMessageParser implements HttpRespo
             }
         }
         return content;
-    }
-
-//        DefaultBHttpClientConnection outConn
-//                = (DefaultBHttpClientConnection) context.getAttribute(HTTP_OUT_CONN);
-//        InetAddress remoteAddress = outConn.getRemoteAddress();
-//        Destination target = this.proxyDomains.matchRemoteToTarget(remoteAddress);
-//        if (target != null) {
-    //check if response contains an entity body
-//        NHttpMessageParser<HttpResponse> responseParser = new DefaultHttpResponseParser(inputBuffer);
-//        
-//        
-//        
-//        HttpResponse updatedResponse = responseParser.parse();
-//        
-//        NHttpMessageWriter responseWriter = new DefaultHttpResponseWriter(outputBuffer);
-//        responseWriter.write(response);
-//        parser.fillBuffer(response.getEntity().getContent());
-//        EntityUtils.consume(entityBody);
-//        if (entityBody != null && entityBody.getContentLength() > 0) {
-//
-//            logger.log(Level.INFO, "%%%%%%%%%%%%%%%  entity body present in the response  %%%%%%%%%%%%%%%%%%%%%");
-//            BufferedHttpEntity bufferedEntity = new BufferedHttpEntity(entityBody);
-//
-//            String entityString = EntityUtils.toString(bufferedEntity);
-//            System.out.println("\n\n" + entityString + "\n\n");
-//
-//        }
-//            ByteArrayInputStream incomingStream = (ByteArrayInputStream) entityBody.getContent();
-//            OutputStream outgoingStream = this.rewriteEmbeddedLinks(incomingStream, target);
-    /**
-     * may need to write the outputStream/entity to the serverConnection in the
-     * httpContext...
-     */
-//            entityBody.writeTo(outgoingStream);
-//        } else {
-//            logger.log(Level.SEVERE,
-//                    "unable to proxy the response from remote server: {0}",
-//                    remoteAddress.getHostName());
-//            throw new IOException("unable to proxy the response "
-//                    + "from the remote server: " + target.getName());
-    @Override
-    protected HttpMessage createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

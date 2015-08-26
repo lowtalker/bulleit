@@ -63,16 +63,16 @@
   <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testNyt" time="0">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testMain" time="0.006">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testMain" time="0.004">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetMain" time="0.006">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetMain" time="0.004">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetHttpsMain" time="0.006">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetHttpsMain" time="0.004">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetNyt" time="0.006">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetNyt" time="0.004">
     <skipped/>
   </testcase>
 </testsuite>

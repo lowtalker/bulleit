@@ -52,6 +52,7 @@ gov/ic/geoint/bulleit/apache/DefaultListeningIOReactor.class
 gov/ic/geoint/bulleit/apache/InterestOpEntry.class
 gov/ic/geoint/bulleit/apache/HttpAsyncExchange.class
 gov/ic/geoint/bulleit/ProxyRequestHandler.class
+gov/ic/geoint/bulleit/interceptors/ResponseRewriter$1$1.class
 gov/ic/geoint/bulleit/apache/NHttpClientHandler.class
 gov/ic/geoint/bulleit/ProxyServiceHandler.class
 gov/ic/geoint/bulleit/apache/SSLIOSession$InternalByteChannel.class
@@ -90,6 +91,7 @@ gov/ic/geoint/bulleit/ResponseRedirectProcessor.class
 gov/ic/geoint/bulleit/interceptors/RedirectHandler.class
 gov/ic/geoint/bulleit/apache/AbstractNIOConnPool$3.class
 gov/ic/geoint/bulleit/apache/AbstractIOReactor.class
+gov/ic/geoint/bulleit/interceptors/ResponseRewriter$1.class
 gov/ic/geoint/bulleit/apache/NHttpServerEventHandlerAdaptor.class
 gov/ic/geoint/bulleit/ProxyIncomingConnectionReuseStrategy.class
 gov/ic/geoint/bulleit/apache/NHttpClientEventHandler.class
