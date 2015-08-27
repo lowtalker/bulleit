@@ -19,7 +19,7 @@ import org.apache.http.protocol.HttpContext;
 /**
  *
  */
-public class ProxyRequestProducer implements HttpAsyncRequestProducer {
+class ProxyRequestProducer implements HttpAsyncRequestProducer {
 
     private final ProxyHttpExchange httpExchange;
     private static final Logger logger = Logger.getLogger(ProxyRequestProducer.class.getName());

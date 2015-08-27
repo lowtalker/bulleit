@@ -27,6 +27,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.config.ConnectionConfig;
 import gov.ic.geoint.bulleit.interceptors.RequestRedirectProcessor;
+import gov.ic.geoint.bulleit.interceptors.RequestRewriter;
 import gov.ic.geoint.bulleit.interceptors.ResponseRewriter;
 //import org.apache.http.impl.nio.DefaultHttpClientIODispatch;
 //import org.apache.http.impl.nio.DefaultHttpServerIODispatch;
@@ -100,6 +101,7 @@ public class HttpReverseProxy {
                             new RequestConnControl(),
                             new RequestRedirectProcessor(),
                             new RequestUserAgent("Test/1.1"),
+//                            new RequestRewriter(),
                             new RequestExpectContinue(true)});
 
         ProxyClientProtocolHandler clientHandler
@@ -168,7 +170,7 @@ public class HttpReverseProxy {
                         new ProxyIncomingConnectionReuseStrategy(),
                         handlerRegistry);
 
-        final IOEventDispatch connectingEventDispatch  //@todo need to add ssl here
+        final IOEventDispatch connectingEventDispatch  
                 = new DefaultHttpClientIODispatch(
                         clientHandler,
                         ConnectionConfig.DEFAULT);

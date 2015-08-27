@@ -14,6 +14,8 @@ import org.apache.http.protocol.HttpContext;
 public class RequestRewriter implements HttpRequestInterceptor {
 
     private static final Logger logger = Logger.getLogger(RequestRewriter.class.getName());
+    
+    public RequestRewriter(){}
 
     @Override
     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {

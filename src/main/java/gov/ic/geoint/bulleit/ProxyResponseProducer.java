@@ -16,7 +16,7 @@ import org.apache.http.protocol.HttpContext;
 /**
  *
  */
-public class ProxyResponseProducer implements HttpAsyncResponseProducer {
+class ProxyResponseProducer implements HttpAsyncResponseProducer {
 
     private final ProxyHttpExchange httpExchange;
     private static final Logger logger = Logger.getLogger(ProxyResponseProducer.class.getName());

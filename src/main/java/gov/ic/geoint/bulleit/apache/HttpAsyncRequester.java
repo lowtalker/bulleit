@@ -207,7 +207,7 @@ public class HttpAsyncRequester {
         final HttpHost target = requestProducer.getTarget();
         connPool.lease(target, null, new ConnRequestCallback<>(
                 future, requestProducer, responseConsumer, connPool, context));
-        return future;  //@todo this has multiple null values
+        return future;  
     }
 
     /**
@@ -338,7 +338,7 @@ public class HttpAsyncRequester {
             final HttpAsyncRequestProducer requestProducer,
             final HttpAsyncResponseConsumer<T> responseConsumer,
             final ConnPool<HttpHost, E> connPool,
-            final HttpContext context) {            //@todo this context is null.  should it be???
+            final HttpContext context) {            
         return execute(requestProducer, responseConsumer, connPool, context, null);
     }
 
@@ -356,7 +356,7 @@ public class HttpAsyncRequester {
             final HttpAsyncRequestProducer requestProducer,
             final HttpAsyncResponseConsumer<T> responseConsumer,
             final ConnPool<HttpHost, E> connPool) {
-        return execute(requestProducer, responseConsumer, connPool, new BasicHttpContext());  //no ssl context passed here...
+        return execute(requestProducer, responseConsumer, connPool, new BasicHttpContext());  
     }
 
     class ConnRequestCallback<T, E extends PoolEntry<HttpHost, NHttpClientConnection>> implements FutureCallback<E> {

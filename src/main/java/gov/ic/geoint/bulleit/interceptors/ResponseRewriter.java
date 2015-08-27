@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -38,7 +39,9 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.MessageConstraints;
+import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
 import org.apache.http.impl.io.ChunkedInputStream;
 import org.apache.http.impl.io.HttpTransportMetricsImpl;
@@ -145,8 +148,13 @@ public class ResponseRewriter implements HttpResponseInterceptor {
         HttpEntity e = response.getEntity();
         String reasonPhrase = response.getStatusLine().getReasonPhrase();
         int statusCode = response.getStatusLine().getStatusCode();
-        CharArrayBuffer entityBuffer = new CharArrayBuffer(20000);
+
         if (e != null) {
+            long contentLength = e.getContentLength();
+            if (contentLength > 0) {
+                System.out.println("################### contentLength: " + contentLength);
+                System.out.println("################### contentType: " + e.getContentType());
+            }
 
             NHttpMessageParserFactory<HttpResponse> responseParserFactory = new NHttpMessageParserFactory<HttpResponse>() {
                 @Override
@@ -154,18 +162,23 @@ public class ResponseRewriter implements HttpResponseInterceptor {
                     BasicLineParser lineParser = BasicLineParser.INSTANCE;
                     NHttpMessageParser<HttpResponse> customParser = new AbstractMessageParser<HttpResponse>(buffer, lineParser, constraints) {
 
+                        //@todo this will need to change...
                         @Override
                         protected HttpResponse createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
-
-                            /*
-                            
-                             parse entity here...
-                             */
-                            System.out.println("message: " + buffer.toString());
-                            entityBuffer.append(buffer);
+                            System.out.println("buffer size: " + buffer.buffer().length);
                             HttpResponse parsedResponse = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, statusCode, reasonPhrase));
-
+                            try {
+                                HttpEntity updatedEntity = new StringEntity(buffer.toString());
+                                parsedResponse.setEntity(updatedEntity);
+                            } catch (UnsupportedEncodingException e) {
+                                logger.log(Level.SEVERE, "unable to set response body {0}", e);
+                            }
                             return parsedResponse;
+                        }
+
+                        public HttpEntity parseEntity() {
+                            HttpEntity entity = new BasicHttpEntity();
+                            return entity;
                         }
                     };
                     return customParser;
@@ -174,8 +187,13 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 
             SessionInputBufferImpl inputBuffer = new SessionInputBufferImpl(8 * 1024);
             NHttpMessageParser<HttpResponse> responseParser = responseParserFactory.create(inputBuffer, MessageConstraints.DEFAULT);
+//            HttpEntity ent = responseParser.parseEntity();
+
             HttpResponse parsedResponse = responseParser.parse();
 
+//            if (parsedResponse == null) {
+            parsedResponse = response;
+//            }
             SessionOutputBufferImpl outputBuffer = new SessionOutputBufferImpl(8 * 1024);
             NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outputBuffer);
             responseWriter.write(parsedResponse);

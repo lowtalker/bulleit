@@ -21,7 +21,7 @@ import org.apache.http.protocol.HttpContext;
 /**
  *
  */
-public class ProxyRequestConsumer implements HttpAsyncRequestConsumer<ProxyHttpExchange> {
+class ProxyRequestConsumer implements HttpAsyncRequestConsumer<ProxyHttpExchange> {
 
     private final ProxyHttpExchange httpExchange;
     private final HttpAsyncRequester executor;
