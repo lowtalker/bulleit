@@ -81,11 +81,14 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
             // If there is some content in the input buffer make sure client
             // output is active
             if (buf.position() > 0) {
+                logger.log(Level.INFO, "@@@@@@@@@@ content decoder type: {0}", decoder.getClass().getName());
+//                logger.log(Level.WARNING, "@@@@@@@@@@ size of buffer array: {0}", buf.array().length);
                 if (this.httpExchange.getClientIOControl() != null) {
-                    this.httpExchange.getClientIOControl().requestOutput();
+                    this.httpExchange.getClientIOControl().requestOutput();//   -----------------------------------------------------------------------------------
                     logger.log(Level.INFO, "[proxy<-origin] {0} request client output", this.httpExchange.getId());
                 }
             }
+
         }
     }
 

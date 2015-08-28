@@ -304,6 +304,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         }
     }
 
+    //@todo check here
     @Override
     public void requestReceived(
             final NHttpServerConnection conn) throws IOException, HttpException {
@@ -375,7 +376,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
             completeRequest(incoming, conn, state);
         }
     }
-
+    //@todo look here
     @Override
     public void responseReady(
             final NHttpServerConnection conn) throws IOException, HttpException {

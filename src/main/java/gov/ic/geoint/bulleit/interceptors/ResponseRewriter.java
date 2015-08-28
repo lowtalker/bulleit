@@ -1,5 +1,6 @@
 package gov.ic.geoint.bulleit.interceptors;
 
+import gov.ic.geoint.bulleit.apache.BasicAsyncResponseProducer;
 import gov.ic.geoint.bulleit.config.Destination;
 import gov.ic.geoint.bulleit.config.Domains;
 import java.io.BufferedReader;
@@ -45,6 +46,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.DefaultBHttpClientConnection;
 import org.apache.http.impl.io.ChunkedInputStream;
 import org.apache.http.impl.io.HttpTransportMetricsImpl;
+import org.apache.http.impl.nio.codecs.AbstractContentEncoder;
 import org.apache.http.impl.nio.codecs.AbstractMessageParser;
 import org.apache.http.impl.nio.codecs.AbstractMessageWriter;
 import org.apache.http.impl.nio.codecs.ChunkDecoder;
@@ -63,6 +65,7 @@ import org.apache.http.nio.NHttpMessageParser;
 import org.apache.http.nio.NHttpMessageParserFactory;
 import org.apache.http.nio.NHttpMessageWriter;
 import org.apache.http.nio.NHttpMessageWriterFactory;
+import org.apache.http.nio.entity.ConsumingNHttpEntity;
 import org.apache.http.nio.reactor.SessionInputBuffer;
 import org.apache.http.nio.reactor.SessionOutputBuffer;
 import org.apache.http.nio.util.DirectByteBufferAllocator;
@@ -151,48 +154,52 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 
         if (e != null) {
             long contentLength = e.getContentLength();
-            if (contentLength > 0) {
-                System.out.println("################### contentLength: " + contentLength);
-                System.out.println("################### contentType: " + e.getContentType());
-            }
+//            if (contentLength > 0) {
+//                System.out.println("################### contentLength: " + contentLength);
+//                System.out.println("################### contentType: " + e.getContentType());
+//            }
+            
+            
+//            BasicAsyncResponseProducer responseProducer = new BasicAsyncResponseProducer(response);
+            
+            
 
-            NHttpMessageParserFactory<HttpResponse> responseParserFactory = new NHttpMessageParserFactory<HttpResponse>() {
-                @Override
-                public NHttpMessageParser<HttpResponse> create(SessionInputBuffer buffer, MessageConstraints constraints) {
-                    BasicLineParser lineParser = BasicLineParser.INSTANCE;
-                    NHttpMessageParser<HttpResponse> customParser = new AbstractMessageParser<HttpResponse>(buffer, lineParser, constraints) {
+//            NHttpMessageParserFactory<HttpResponse> responseParserFactory = new NHttpMessageParserFactory<HttpResponse>() {
+//                @Override
+//                public NHttpMessageParser<HttpResponse> create(SessionInputBuffer buffer, MessageConstraints constraints) {
+//                    BasicLineParser lineParser = BasicLineParser.INSTANCE;
+//                    NHttpMessageParser<HttpResponse> customParser = new AbstractMessageParser<HttpResponse>(buffer, lineParser, constraints) {
+//
+//                        @Override
+//                        protected HttpResponse createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
+//                            System.out.println("buffer size: " + buffer.buffer().length);
+//                            HttpResponse parsedResponse = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, statusCode, reasonPhrase));
+//                            try {
+//                                HttpEntity updatedEntity = new StringEntity(buffer.toString());
+//                                parsedResponse.setEntity(updatedEntity);
+//                            } catch (UnsupportedEncodingException e) {
+//                                logger.log(Level.SEVERE, "unable to set response body {0}", e);
+//                            }
+//                            return parsedResponse;
+//                        }
+//
+//                        public HttpEntity parseEntity() {
+//                            HttpEntity entity = new BasicHttpEntity();
+//                            return entity;
+//                        }
+//                    };
+//                    return customParser;
+//                }
+//            };
 
-                        //@todo this will need to change...
-                        @Override
-                        protected HttpResponse createMessage(CharArrayBuffer buffer) throws HttpException, ParseException {
-                            System.out.println("buffer size: " + buffer.buffer().length);
-                            HttpResponse parsedResponse = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, statusCode, reasonPhrase));
-                            try {
-                                HttpEntity updatedEntity = new StringEntity(buffer.toString());
-                                parsedResponse.setEntity(updatedEntity);
-                            } catch (UnsupportedEncodingException e) {
-                                logger.log(Level.SEVERE, "unable to set response body {0}", e);
-                            }
-                            return parsedResponse;
-                        }
-
-                        public HttpEntity parseEntity() {
-                            HttpEntity entity = new BasicHttpEntity();
-                            return entity;
-                        }
-                    };
-                    return customParser;
-                }
-            };
-
-            SessionInputBufferImpl inputBuffer = new SessionInputBufferImpl(8 * 1024);
-            NHttpMessageParser<HttpResponse> responseParser = responseParserFactory.create(inputBuffer, MessageConstraints.DEFAULT);
+//            SessionInputBufferImpl inputBuffer = new SessionInputBufferImpl(8 * 1024);
+//            NHttpMessageParser<HttpResponse> responseParser = responseParserFactory.create(inputBuffer, MessageConstraints.DEFAULT);
 //            HttpEntity ent = responseParser.parseEntity();
 
-            HttpResponse parsedResponse = responseParser.parse();
+//            HttpResponse parsedResponse = responseParser.parse();
 
 //            if (parsedResponse == null) {
-            parsedResponse = response;
+           HttpResponse parsedResponse = response;
 //            }
             SessionOutputBufferImpl outputBuffer = new SessionOutputBufferImpl(8 * 1024);
             NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outputBuffer);
