@@ -71,6 +71,7 @@ import org.apache.http.nio.reactor.SessionOutputBuffer;
 import org.apache.http.nio.util.DirectByteBufferAllocator;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.http.util.CharArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
@@ -151,19 +152,20 @@ public class ResponseRewriter implements HttpResponseInterceptor {
         HttpEntity e = response.getEntity();
         String reasonPhrase = response.getStatusLine().getReasonPhrase();
         int statusCode = response.getStatusLine().getStatusCode();
-
+        System.out.println("");
+//        BasicHttpResponse contextResponse = (BasicHttpResponse) (HttpResponse) context.getAttribute(HttpCoreContext.HTTP_REQUEST);
+        SessionInputBuffer inbuffer = new SessionInputBufferImpl(50);
+//        ReadableByteChannel rbc = new R
         if (e != null) {
             long contentLength = e.getContentLength();
-//            if (contentLength > 0) {
-//                System.out.println("################### contentLength: " + contentLength);
-//                System.out.println("################### contentType: " + e.getContentType());
-//            }
-            
-            
-//            BasicAsyncResponseProducer responseProducer = new BasicAsyncResponseProducer(response);
-            
-            
+            if (contentLength > 0) {
+                System.out.println("################### contentLength: " + contentLength);
+                System.out.println("################### contentType: " + e.getContentType());
+                System.out.println(" reason Phrase : " + reasonPhrase);
+                System.out.println(" status code : " + statusCode);
+            }
 
+//            BasicAsyncResponseProducer responseProducer = new BasicAsyncResponseProducer(response);
 //            NHttpMessageParserFactory<HttpResponse> responseParserFactory = new NHttpMessageParserFactory<HttpResponse>() {
 //                @Override
 //                public NHttpMessageParser<HttpResponse> create(SessionInputBuffer buffer, MessageConstraints constraints) {
@@ -191,15 +193,12 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 //                    return customParser;
 //                }
 //            };
-
 //            SessionInputBufferImpl inputBuffer = new SessionInputBufferImpl(8 * 1024);
 //            NHttpMessageParser<HttpResponse> responseParser = responseParserFactory.create(inputBuffer, MessageConstraints.DEFAULT);
 //            HttpEntity ent = responseParser.parseEntity();
-
 //            HttpResponse parsedResponse = responseParser.parse();
-
 //            if (parsedResponse == null) {
-           HttpResponse parsedResponse = response;
+            HttpResponse parsedResponse = response;
 //            }
             SessionOutputBufferImpl outputBuffer = new SessionOutputBufferImpl(8 * 1024);
             NHttpMessageWriter<HttpResponse> responseWriter = new DefaultHttpResponseWriter(outputBuffer);

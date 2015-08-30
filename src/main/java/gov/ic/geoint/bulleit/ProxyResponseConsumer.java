@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
@@ -50,6 +51,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
             HttpAsyncExchange responseTrigger = this.httpExchange.getResponseTrigger();
             if (responseTrigger != null && !responseTrigger.isCompleted()) {
                 logger.log(Level.INFO, "[client<-proxy] {0} response triggered", this.httpExchange.getId());
+
                 responseTrigger.submitResponse(new ProxyResponseProducer(this.httpExchange));
             }
         }
@@ -66,7 +68,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
              *
              */
             ByteBuffer buf = this.httpExchange.getOutBuffer();
-            int n = decoder.read(buf);
+            int n = decoder.read(buf);  //decoding from origin happens here.
 
             System.out.println("[proxy<-origin] " + this.httpExchange.getId() + " " + n + " bytes read");
             if (decoder.isCompleted()) {
@@ -78,6 +80,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
                 ioctrl.suspendInput();
                 logger.log(Level.INFO, "[proxy<-origin] {0} suspend origin input", this.httpExchange.getId());
             }
+
             // If there is some content in the input buffer make sure client
             // output is active
             if (buf.position() > 0) {

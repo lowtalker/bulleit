@@ -40,7 +40,7 @@ public class EntityAsyncContentProducer implements HttpAsyncContentProducer {
         if (this.channel == null) {
             this.channel = Channels.newChannel(this.entity.getContent());
         }
-        final int i = this.channel.read(this.buffer);
+        final int i = this.channel.read(this.buffer);  //decryption done here
         this.buffer.flip();
         encoder.write(this.buffer);
         final boolean buffering = this.buffer.hasRemaining();
