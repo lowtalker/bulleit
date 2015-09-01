@@ -8,6 +8,7 @@ import java.nio.CharBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpResponse;
+import org.apache.http.impl.nio.DefaultNHttpClientConnection;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.nio.ContentEncoder;
 //import org.apache.http.nio.IOControl;
@@ -39,7 +40,7 @@ class ProxyResponseProducer implements HttpAsyncResponseProducer {
             logger.log(Level.INFO, "[client<-proxy] {0} {1}", new Object[]{this.httpExchange.getId(), response.getStatusLine()});
 
             BasicHttpResponse r = new BasicHttpResponse(response.getStatusLine());
-            r.setEntity(response.getEntity());           
+            r.setEntity(response.getEntity());
             return r;
         }
     }
@@ -52,6 +53,12 @@ class ProxyResponseProducer implements HttpAsyncResponseProducer {
             // Send data to the client
             ByteBuffer buf = this.httpExchange.getOutBuffer();
             System.out.println("here?here?here?here?here?here? " + buf);
+
+            RewriteAsyncByteConsumer rewriteConsumer = new RewriteAsyncByteConsumer();
+            DefaultNHttpClientConnection dcc = (DefaultNHttpClientConnection) ioctrl;
+                        
+            rewriteConsumer.onByteReceived(buf.duplicate(), dcc);
+
             buf.flip();
             int n = encoder.write(buf);
             buf.compact();

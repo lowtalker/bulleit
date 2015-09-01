@@ -29,6 +29,7 @@
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/DefaultHttpClientIODispatch.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/DefaultNHttpClientConnectionFactory.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/LeaseRequest.java
+/home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/RewriteAsyncByteConsumer.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/NHttpClientIOTarget.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/NHttpClientHandler.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/HttpAsyncRequestHandlerMapper.java

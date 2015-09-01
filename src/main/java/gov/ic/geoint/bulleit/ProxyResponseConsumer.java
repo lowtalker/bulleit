@@ -16,10 +16,13 @@ import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
+import org.apache.http.impl.nio.DefaultNHttpClientConnection;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.nio.ContentDecoder;
+import org.apache.http.nio.client.methods.AsyncByteConsumer;
 //import org.apache.http.nio.IOControl;
 import org.apache.http.nio.entity.NStringEntity;
+import org.apache.http.nio.reactor.IOSession;
 //import org.apache.http.nio.protocol.BasicAsyncResponseProducer;
 //import org.apache.http.nio.protocol.HttpAsyncExchange;
 //import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
@@ -63,11 +66,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
         synchronized (this.httpExchange) {
             this.httpExchange.setOriginIOControl(ioctrl);
             // Receive data from the origin
-
-            /**
-             *
-             */
-            ByteBuffer buf = this.httpExchange.getOutBuffer();
+            ByteBuffer buf = this.httpExchange.getOutBuffer();           
             int n = decoder.read(buf);  //decoding from origin happens here.
 
             System.out.println("[proxy<-origin] " + this.httpExchange.getId() + " " + n + " bytes read");

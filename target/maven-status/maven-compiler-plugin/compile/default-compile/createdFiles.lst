@@ -1,6 +1,7 @@
 gov/ic/geoint/bulleit/ProxyHttpExchange.class
 gov/ic/geoint/bulleit/ProxyRequestProducer.class
 gov/ic/geoint/bulleit/apache/AbstractMultiworkerIOReactor$DefaultThreadFactory.class
+gov/ic/geoint/bulleit/RewriteAsyncByteConsumer.class
 gov/ic/geoint/bulleit/apache/DefaultNHttpClientConnectionFactory.class
 gov/ic/geoint/bulleit/apache/AbstractIOReactor$1.class
 gov/ic/geoint/bulleit/apache/NHttpServerConnection.class
