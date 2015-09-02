@@ -5,8 +5,10 @@ import gov.ic.geoint.bulleit.apache.IOControl;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.nio.DefaultNHttpClientConnection;
 import org.apache.http.message.BasicHttpResponse;
@@ -54,12 +56,31 @@ class ProxyResponseProducer implements HttpAsyncResponseProducer {
             ByteBuffer buf = this.httpExchange.getOutBuffer();
             System.out.println("here?here?here?here?here?here? " + buf);
 
-            RewriteAsyncByteConsumer rewriteConsumer = new RewriteAsyncByteConsumer();
-            DefaultNHttpClientConnection dcc = (DefaultNHttpClientConnection) ioctrl;
-                        
-            rewriteConsumer.onByteReceived(buf.duplicate(), dcc);
-
+//            RewriteAsyncByteConsumer rewriteConsumer = new RewriteAsyncByteConsumer();
+//            DefaultNHttpClientConnection dcc = (DefaultNHttpClientConnection) ioctrl;                        
+//            rewriteConsumer.onByteReceived(buf.duplicate(), dcc);
+//            String parsedBytes = new String(buf.array(), StandardCharsets.UTF_8);
+            HttpEntity entity = this.httpExchange.getResponse().getEntity();
             buf.flip();
+            if (entity != null && entity.getContentType().getValue().contains("html")) {
+//                System.out.println("html text found");
+//                System.out.println("buf limit: " + buf.limit());
+//                System.out.println("buf capac: " + buf.capacity());
+//                System.out.println("buf remain: " + buf.remaining());
+                byte[] dest = new byte[buf.limit()];
+                buf.get(dest, 0, buf.limit());
+//                System.out.println("dest len: " + dest.length);
+                String s = new String(dest, StandardCharsets.UTF_8);
+                buf.flip();
+                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                System.out.println("entity body: " + s);
+//                System.out.println("entity body: " + s);
+//                System.out.println("buf posn: " + buf.position());
+//                System.out.println("buf limit: " + buf.limit());
+//                System.out.println("buf capac: " + buf.capacity());
+//                System.out.println("buf remain: " + buf.remaining());
+            }
+
             int n = encoder.write(buf);
             buf.compact();
             logger.log(Level.INFO, "[client<-proxy] {0} {1} bytes written", new Object[]{this.httpExchange.getId(), n});

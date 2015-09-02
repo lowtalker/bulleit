@@ -16,11 +16,11 @@
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/ProxyClientProtocolHandler.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/NHttpConnectionFactory.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/InterestOpEntry.java
+/home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/EmbeddedLinkRewriter.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/SSLSetupHandler.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/BasicNIOConnFactory.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/ResponseRedirectProcessor.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/SessionHttpContext.java
-/home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/interceptors/ResponseRewriter.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/ProxyResponseConsumer.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/SessionRequestHandle.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/HttpAsyncRequestHandler.java

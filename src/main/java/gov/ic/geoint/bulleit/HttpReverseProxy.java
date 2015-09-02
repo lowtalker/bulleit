@@ -27,8 +27,6 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.config.ConnectionConfig;
 import gov.ic.geoint.bulleit.interceptors.RequestRedirectProcessor;
-import gov.ic.geoint.bulleit.interceptors.RequestRewriter;
-import gov.ic.geoint.bulleit.interceptors.ResponseRewriter;
 //import org.apache.http.impl.nio.DefaultHttpClientIODispatch;
 //import org.apache.http.impl.nio.DefaultHttpServerIODispatch;
 //import gov.ic.geoint.bulleit.apache.BasicNIOConnFactory;
@@ -86,7 +84,6 @@ public class HttpReverseProxy {
                         new HttpResponseInterceptor[]{
                             new ResponseDate(),
                             new ResponseServer("Test/1.1"),
-                            new ResponseRewriter(),
                             new ResponseContent(),                             
                             new ResponseRedirectProcessor(),
                             new ResponseConnControl()});
@@ -101,7 +98,6 @@ public class HttpReverseProxy {
                             new RequestConnControl(),
                             new RequestRedirectProcessor(),
                             new RequestUserAgent("Test/1.1"),
-//                            new RequestRewriter(),
                             new RequestExpectContinue(true)});
 
         ProxyClientProtocolHandler clientHandler

@@ -1,4 +1,4 @@
-package gov.ic.geoint.bulleit.interceptors;
+package gov.ic.geoint.bulleit;
 
 import gov.ic.geoint.bulleit.apache.BasicAsyncResponseProducer;
 import gov.ic.geoint.bulleit.config.Destination;
@@ -78,7 +78,7 @@ import org.apache.http.util.EntityUtils;
 /**
  *
  */
-public class ResponseRewriter implements HttpResponseInterceptor {
+class EmbeddedLinkRewriter {
 
     /**
      * The location for this server, used when we rewrite absolute URIs
@@ -121,16 +121,16 @@ public class ResponseRewriter implements HttpResponseInterceptor {
     /**
      * Logging element supplied by commons-logging.
      */
-    private static final Logger logger = Logger.getLogger(ResponseRewriter.class.getName());
+    private static final Logger logger = Logger.getLogger(EmbeddedLinkRewriter.class.getName());
 
-    public ResponseRewriter(SessionInputBuffer buffer, LineParser lineParser, HttpParams params) {
+    public EmbeddedLinkRewriter(ProxyHttpExchange exchange) {
 //        super(buffer, lineParser, params);
         this.ownHostName = "";
         this.contextPath = "";
         this.proxyDomains = null;
     }
 
-    public ResponseRewriter() {
+    public EmbeddedLinkRewriter() {
 //        super(new SessionInputBufferImpl(4048), BasicLineParser.INSTANCE, ConnectionConfig.DEFAULT.getMessageConstraints());
         this.ownHostName = "";
         this.contextPath = "";
@@ -138,7 +138,7 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 
     }
 //
-//    public ResponseRewriter(Domains proxyDomains) {
+//    public EmbeddedLinkRewriter(Domains proxyDomains) {
 //
 //        this.contextPath = proxyDomains.getProxyConfig().getHostURL()
 //                + ":" + proxyDomains.getProxyConfig().getHostPort();
@@ -146,7 +146,7 @@ public class ResponseRewriter implements HttpResponseInterceptor {
 //        this.ownHostName = proxyDomains.getProxyConfig().getHostURL();
 //
 
-    @Override
+    
     public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
 //         GzipDecompressingEntity gde = new GzipDecompressingEntity(e);
         HttpEntity e = response.getEntity();
