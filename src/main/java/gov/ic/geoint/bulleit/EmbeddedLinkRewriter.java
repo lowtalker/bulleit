@@ -141,7 +141,7 @@ class EmbeddedLinkRewriter {
 
     }
 
-    public static ByteBuffer rewriteEmbeddedLinks(ProxyHttpExchange httpExchange) {
+    public ByteBuffer rewriteEmbeddedLinks(ProxyHttpExchange httpExchange) {
         exchange = httpExchange;
         ByteBuffer buf = exchange.getOutBuffer();
         buf.flip();
@@ -149,11 +149,13 @@ class EmbeddedLinkRewriter {
         buf.get(dest, 0, buf.limit());
 
         String s = new String(dest, StandardCharsets.UTF_8);
+        String rewrittenEntity = rewriteEntityString(s);
+        
 
         /**
          * need to rewrite links and then put the data back into the buffer
          */
-        byte[] rewrittenDest = s.getBytes(StandardCharsets.UTF_8);
+        byte[] rewrittenDest = rewrittenEntity.getBytes(StandardCharsets.UTF_8);
         ByteBuffer rewrittenBuffer = ByteBuffer.wrap(rewrittenDest);
 
         buf.flip();
