@@ -88,7 +88,7 @@ class EmbeddedLinkRewriter {
     /**
      * The contextPath, needed when we rewrite links.
      */
-    private final String contextPath;
+    private static String contextPath;
 
     /**
      * Restricted list of target URLs made accessible via this proxy
@@ -107,6 +107,13 @@ class EmbeddedLinkRewriter {
     private static final String HTTP_IN_CONN = "http.proxy.in-conn";
     private static final String HTTP_OUT_CONN = "http.proxy.out-conn";
 
+    private static StringBuffer page = new StringBuffer();
+    private static Matcher matcher;
+
+    static {
+        remoteTarget = discoverDestination(exchange);
+    }
+
 //    /**
 //     * Regex to find absolute links.
 //     */
@@ -124,6 +131,7 @@ class EmbeddedLinkRewriter {
      * Logging element supplied by commons-logging.
      */
     private static final Logger logger = Logger.getLogger(EmbeddedLinkRewriter.class.getName());
+    private static Destination remoteTarget;
 
     protected EmbeddedLinkRewriter(ProxyHttpExchange xchg) {
         exchange = xchg;
@@ -141,7 +149,7 @@ class EmbeddedLinkRewriter {
 
     }
 
-    public ByteBuffer rewriteEmbeddedLinks(ProxyHttpExchange httpExchange) {
+    public static ByteBuffer rewriteEmbeddedLinks(ProxyHttpExchange httpExchange) {
         exchange = httpExchange;
         ByteBuffer buf = exchange.getOutBuffer();
         buf.flip();
@@ -150,7 +158,6 @@ class EmbeddedLinkRewriter {
 
         String s = new String(dest, StandardCharsets.UTF_8);
         String rewrittenEntity = rewriteEntityString(s);
-        
 
         /**
          * need to rewrite links and then put the data back into the buffer
@@ -170,7 +177,7 @@ class EmbeddedLinkRewriter {
      * @return String rewritten entity
      * @throws IOException Is thrown when there is a problem with the streams
      */
-    private String rewriteEntityString(String entity) {
+    private static String rewriteEntityString(String entity) {
         /*
          * Using regex can be quite harsh sometimes so here is how
          * the regex trying to find links works
@@ -196,37 +203,36 @@ class EmbeddedLinkRewriter {
          * $5 - The host name, e.g. www.server.com
          * $6 - The link
          */
-        StringBuffer page = new StringBuffer();
-        Destination remoteTarget = this.discoverDestination(exchange);
 
-        Matcher matcher = linkPattern.matcher(entity);
-
-        while (matcher.find()) {
-
-            String link = matcher.group(6).replaceAll("\\$", "\\\\\\$");
-            if (link.length() == 0) {
-                link = "/";
-            }
-
-            String rewritten = null;
-            //group 4 contains the protocol: http or https
-            if (matcher.group(4) != null) {
-                rewritten = handleExternalLink(matcher, link, remoteTarget);
-
-            } else if (link.startsWith("/")) {
-                rewritten = handleLocalLink(matcher, link, remoteTarget);
-            }
-
-            if (rewritten != null) {
-//                logger.finest("Found link " + link + " >> " + rewritten);
-                matcher.appendReplacement(page, rewritten);
-            }
-        }
-        matcher.appendTail(page);
-        return page.toString();
+//        matcher = linkPattern.matcher(entity);
+//
+//        while (matcher.find()) {
+//
+//            String link = matcher.group(6).replaceAll("\\$", "\\\\\\$");
+//            if (link.length() == 0) {
+//                link = "/";
+//            }
+//
+//            String rewritten = null;
+//            //group 4 contains the protocol: http or https
+//            if (matcher.group(4) != null) {
+//                rewritten = handleExternalLink(matcher, link, remoteTarget);
+//
+//            } else if (link.startsWith("/")) {
+//                rewritten = handleLocalLink(matcher, link, remoteTarget);
+//            }
+//
+//            if (rewritten != null) {
+////                logger.finest("Found link " + link + " >> " + rewritten);
+//                matcher.appendReplacement(page, rewritten);
+//            }
+//        }
+//        matcher.appendTail(page);
+//        return page.toString();
+        return entity;
     }
 
-    private Destination discoverDestination(ProxyHttpExchange exchange) {
+    private static Destination discoverDestination(ProxyHttpExchange exchange) {
         Destination d = new Destination();
         Domains domains = Domains.newInstance();
         d = domains.selectMappedDestination(exchange.getTarget().getHostName());
@@ -248,7 +254,7 @@ class EmbeddedLinkRewriter {
      * @param remoteTarget
      * @return The link now rewritten
      */
-    protected String handleExternalLink(Matcher matcher, String link, Destination remoteTarget) {
+    protected static String handleExternalLink(Matcher matcher, String link, Destination remoteTarget) {
 
 //        link = link.substring(remoteTarget.getDestinationUrl().length());
         link = remoteTarget.revert(link);
@@ -268,7 +274,7 @@ class EmbeddedLinkRewriter {
 //        return null;
     }
 
-    protected String handleLocalLink(Matcher matcher, String link, Destination remoteTarget) {
+    protected static String handleLocalLink(Matcher matcher, String link, Destination remoteTarget) {
 
         if (matcher.find()) {
             String trailingSeparator = matcher.group(2);
