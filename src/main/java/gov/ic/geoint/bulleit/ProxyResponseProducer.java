@@ -2,6 +2,7 @@ package gov.ic.geoint.bulleit;
 
 import gov.ic.geoint.bulleit.apache.HttpAsyncResponseProducer;
 import gov.ic.geoint.bulleit.apache.IOControl;
+import gov.ic.geoint.bulleit.config.Domains;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
@@ -21,6 +22,7 @@ class ProxyResponseProducer implements HttpAsyncResponseProducer {
 
     private final ProxyHttpExchange httpExchange;
     private static final Logger logger = Logger.getLogger(ProxyResponseProducer.class.getName());
+    private final Domains proxyDomains = Domains.newInstance();
 
     public ProxyResponseProducer(final ProxyHttpExchange httpExchange) {
         super();
@@ -50,14 +52,18 @@ class ProxyResponseProducer implements HttpAsyncResponseProducer {
         synchronized (this.httpExchange) {
             this.httpExchange.setClientIOControl(ioctrl);
             // Send data to the client
-            ByteBuffer buf;
+            ByteBuffer buf = null;
             HttpEntity entity = this.httpExchange.getResponse().getEntity();
 
             //rewrite embedded links if the response body contains html/text 
             if (entity != null && entity.getContentType().getValue().contains("html")) {
 //                EmbeddedLinkRewriter elr = new EmbeddedLinkRewriter();
 //                buf = elr.rewriteEmbeddedLinks(httpExchange);
-                buf = EmbeddedLinkRewriter.rewriteEmbeddedLinks(httpExchange);
+                try {
+                    buf = EmbeddedLinkRewriter.rewriteEmbeddedLinks(httpExchange, proxyDomains);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "embedded link rewriter exception {0}", e);
+                }
             } else {
                 buf = this.httpExchange.getOutBuffer();
                 buf.flip();

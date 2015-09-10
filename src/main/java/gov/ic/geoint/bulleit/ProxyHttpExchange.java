@@ -2,6 +2,7 @@ package gov.ic.geoint.bulleit;
 
 import gov.ic.geoint.bulleit.apache.HttpAsyncExchange;
 import gov.ic.geoint.bulleit.apache.IOControl;
+import gov.ic.geoint.bulleit.config.Destination;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,7 @@ class ProxyHttpExchange {
 
     private volatile String id;
     private volatile HttpHost target;
+    private volatile Destination destination;
     private volatile HttpAsyncExchange responseTrigger;
     private volatile IOControl originIOControl;
     private volatile IOControl clientIOControl;
@@ -53,6 +55,14 @@ class ProxyHttpExchange {
 
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public void setDestination(final Destination destination) {
+        this.destination = destination;
+    }
+
+    public Destination getDestination() {
+        return this.destination;
     }
 
     public HttpHost getTarget() {

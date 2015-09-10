@@ -110,10 +110,6 @@ class EmbeddedLinkRewriter {
     private static StringBuffer page = new StringBuffer();
     private static Matcher matcher;
 
-    static {
-        remoteTarget = discoverDestination(exchange);
-    }
-
 //    /**
 //     * Regex to find absolute links.
 //     */
@@ -149,15 +145,16 @@ class EmbeddedLinkRewriter {
 
     }
 
-    public static ByteBuffer rewriteEmbeddedLinks(ProxyHttpExchange httpExchange) {
+    public static ByteBuffer rewriteEmbeddedLinks(ProxyHttpExchange httpExchange, Domains proxyDomains) {
         exchange = httpExchange;
+        remoteTarget = discoverDestination(exchange);
         ByteBuffer buf = exchange.getOutBuffer();
         buf.flip();
         byte[] dest = new byte[buf.limit()];
         buf.get(dest, 0, buf.limit());
 
         String s = new String(dest, StandardCharsets.UTF_8);
-        String rewrittenEntity = rewriteEntityString(s);
+        String rewrittenEntity = rewriteEntityString(s, remoteTarget);
 
         /**
          * need to rewrite links and then put the data back into the buffer
@@ -177,7 +174,7 @@ class EmbeddedLinkRewriter {
      * @return String rewritten entity
      * @throws IOException Is thrown when there is a problem with the streams
      */
-    private static String rewriteEntityString(String entity) {
+    private static String rewriteEntityString(String entity, Destination remoteTarget) {
         /*
          * Using regex can be quite harsh sometimes so here is how
          * the regex trying to find links works
@@ -204,32 +201,36 @@ class EmbeddedLinkRewriter {
          * $6 - The link
          */
 
-//        matcher = linkPattern.matcher(entity);
-//
-//        while (matcher.find()) {
-//
-//            String link = matcher.group(6).replaceAll("\\$", "\\\\\\$");
-//            if (link.length() == 0) {
-//                link = "/";
-//            }
-//
-//            String rewritten = null;
-//            //group 4 contains the protocol: http or https
-//            if (matcher.group(4) != null) {
-//                rewritten = handleExternalLink(matcher, link, remoteTarget);
-//
-//            } else if (link.startsWith("/")) {
-//                rewritten = handleLocalLink(matcher, link, remoteTarget);
-//            }
-//
-//            if (rewritten != null) {
-////                logger.finest("Found link " + link + " >> " + rewritten);
-//                matcher.appendReplacement(page, rewritten);
-//            }
-//        }
-//        matcher.appendTail(page);
-//        return page.toString();
-        return entity;
+        matcher = linkPattern.matcher(entity);
+
+        while (matcher.find()) {
+            logger.log(Level.INFO, "embedded link found: {0}", matcher.groupCount());
+
+            String link = matcher.group(6).replaceAll("\\$", "\\\\\\$");
+            if (link.length() == 0) {
+                link = "/";
+            }
+
+            String rewritten = null;
+            //group 4 contains the protocol: http or https
+            if (matcher.group(4) != null) {
+                rewritten = handleExternalLink(matcher, link, remoteTarget);
+
+            } else if (link.startsWith("/")) {
+                rewritten = handleLocalLink(matcher, link, remoteTarget);
+            }
+
+            if (rewritten != null) {
+//                logger.finest("Found link " + link + " >> " + rewritten);
+                matcher.appendReplacement(page, rewritten);
+            }
+        }
+        matcher.appendTail(page);
+        if (page.length() > 0) {
+            return page.toString();
+        } else {
+            return entity;
+        }
     }
 
     private static Destination discoverDestination(ProxyHttpExchange exchange) {
@@ -333,5 +334,15 @@ class EmbeddedLinkRewriter {
                 || lowerCased.contains("css")
                 || lowerCased.contains("javascript")
                 || lowerCased.contains("js"));
+    }
+
+    private static String revert(String uri, String prefix) {
+        if (uri.startsWith(prefix)) {
+            return uri;
+        } else if (uri.startsWith("/")) {
+            return prefix + uri.substring(1);
+        } else {
+            return uri;
+        }
     }
 }
