@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="5" failures="0" name="gov.ic.geoint.bulleit.HttpReverseProxyTest" time="0.055" errors="0" skipped="5">
+<testsuite tests="5" failures="0" name="gov.ic.geoint.bulleit.HttpReverseProxyTest" time="0.051" errors="0" skipped="5">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/java/jdk1.8.0_40/jre/lib/amd64"/>
@@ -63,16 +63,16 @@
   <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testNyt" time="0">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testMain" time="0.007">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testMain" time="0.004">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetMain" time="0.007">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetMain" time="0.004">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetHttpsMain" time="0.007">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetHttpsMain" time="0.004">
     <skipped/>
   </testcase>
-  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetNyt" time="0.007">
+  <testcase classname="gov.ic.geoint.bulleit.HttpReverseProxyTest" name="testGetNyt" time="0.004">
     <skipped/>
   </testcase>
 </testsuite>

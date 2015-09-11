@@ -65,23 +65,23 @@ public class Domains {
     }
 
     /**
-     * 
+     *
      * @param location
      * @return Destination
      */
     public Destination selectMappedDestination(String location) {
         for (Destination d : this.destinations) {
-            if (location.startsWith(d.getPrefix())) {
+            if (location.startsWith(d.getDestinationUrl())) {
                 return d;
             }
         }
-        return null;  //@todo needs to be handled better        
+        return null;  //@todo should the proxy fail gracefully here? or send a default page stating that the target web resource isn't available?? 
     }
 
     /**
-     * 
+     *
      * @param remoteAddress
-     * @return Destination 
+     * @return Destination
      */
     public Destination matchRemoteToTarget(InetAddress remoteAddress) {
 

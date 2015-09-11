@@ -221,11 +221,15 @@ class EmbeddedLinkRewriter {
             }
 
             if (rewritten != null) {
-//                logger.finest("Found link " + link + " >> " + rewritten);
+                logger.finest("##### Rewrote link: " + link + " >> " + rewritten);
                 matcher.appendReplacement(page, rewritten);
+            } else {
+                logger.info("##### Untouched link: " + link);
             }
+
         }
         matcher.appendTail(page);
+
         if (page.length() > 0) {
             return page.toString();
         } else {

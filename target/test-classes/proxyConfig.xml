@@ -2,6 +2,14 @@
 <proxyConfig>
     <destinations>
         <destination>
+            <name>atom</name>
+            <destinationUrl>atom.io</destinationUrl>
+            <destinationPort>443</destinationPort>
+            <prefix>/atom</prefix>
+            <asyncSupport>true</asyncSupport>
+            <scheme>https</scheme>
+        </destination>
+        <destination>
             <name>test</name>
             <destinationUrl>localhost</destinationUrl>
             <destinationPort>8080</destinationPort>
