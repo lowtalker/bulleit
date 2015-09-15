@@ -34,6 +34,8 @@ public class SecureContextFactory {
 //            String keyStorePath = System.getProperty("java.home") + "/lib/security/cacerts".replace('/', File.separatorChar);
             String keyStorePath = System.getProperty("java.home") + "/lib/security/keystoreproxy.pfx".replace('/', File.separatorChar);
             String trustStorePath = System.getProperty("java.home") + "/lib/security/cacerts".replace('/', File.separatorChar);
+
+            logger.log(Level.SEVERE, "########trustStorePath: {0}", trustStorePath);
             char[] password = "changeit".toCharArray();
             KeyStore keyStore;
             KeyStore trustStore;

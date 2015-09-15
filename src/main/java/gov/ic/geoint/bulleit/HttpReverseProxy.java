@@ -126,13 +126,14 @@ public class HttpReverseProxy {
         System.out.println("host: " + uri.getHost());
         HttpHost secureHost = new HttpHost(uri.getHost(), 443, "https");
         
-        handlerRegistry.register("*", new ProxyRequestHandler(secureHost, asyncRequester, connPool));
+//        handlerRegistry.register("*", new ProxyRequestHandler(secureHost, asyncRequester, connPool));
         
+        URI twitterUri = new URI("https://platform.twitter.com/oct.js");
+        HttpHost twitterSecureHost = new HttpHost(twitterUri.getHost(), 443, "https");
         
-//        URI uri = new URI("http://www.nytimes.com");        
-//        HttpHost host = new HttpHost(uri.getHost(), 80, "http"); 
-//        handlerRegistry.register("*", new ProxyRequestHandler(host, asyncRequester, connPool));
+        handlerRegistry.register("*", new ProxyRequestHandler(twitterSecureHost, asyncRequester, connPool));
         
+                
         
 
 //        for (Destination d : proxyDomains.getDestinations()) {
