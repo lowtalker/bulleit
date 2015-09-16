@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- test config file -->
 <proxyConfig>
     <destinations>
         <destination>
@@ -10,53 +11,13 @@
             <scheme>https</scheme>
         </destination>
         <destination>
-            <name>test</name>
-            <destinationUrl>localhost</destinationUrl>
-            <destinationPort>8080</destinationPort>
-            <prefix>/test</prefix>
-            <asyncSupport>true</asyncSupport>
-            <scheme>http</scheme>
-        </destination>
-        <destination>
-            <name>stest</name>
-            <destinationUrl>localhost</destinationUrl>
-            <destinationPort>8181</destinationPort>
-            <prefix>/stest</prefix>
-            <asyncSupport>true</asyncSupport>
-            <scheme>https</scheme>
-        </destination>
-        <destination>
-            <name>nyt</name>
-            <destinationUrl>www.nytimes.com</destinationUrl>
-            <destinationPort>80</destinationPort>
-            <prefix>/nyt</prefix>
-            <asyncSupport>true</asyncSupport>
-            <scheme>http</scheme>
-        </destination>
-        <destination>
-            <name>google</name>
-            <destinationUrl>www.google.com</destinationUrl>
-            <destinationPort>80</destinationPort>
-            <prefix>/google</prefix>
-            <asyncSupport>true</asyncSupport>
-            <scheme>https</scheme>
-        </destination >
-        <destination>
-            <name>safariSsl</name>
-            <destinationUrl>ssl.safaribooks.com</destinationUrl> <!-- don't include scheme, just string form of url -->
+            <name>twitter</name>
+            <destinationUrl>platform.twitter.com</destinationUrl>
             <destinationPort>443</destinationPort>
-            <prefix>/sslSafari</prefix>
-            <asyncSupport>true</asyncSupport>
-            <scheme>https</scheme> <!-- take the scheme from the client  -->
-        </destination>
-        <destination>
-            <name>secureSafari</name>
-            <destinationUrl>techbus.safaribooksonline.com</destinationUrl>            
-            <destinationPort>80</destinationPort>
-            <prefix>/safari</prefix>            
+            <prefix>/twitter</prefix>
             <asyncSupport>true</asyncSupport>
             <scheme>https</scheme>
-        </destination>                          
+        </destination>                   
     </destinations>
     <maxThreads>10</maxThreads>
     <maxConnections>10</maxConnections>
