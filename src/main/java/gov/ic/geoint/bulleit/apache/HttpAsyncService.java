@@ -95,6 +95,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
     private final HttpAsyncExpectationVerifier expectationVerifier;
     private final ExceptionLogger exceptionLogger;
     private static final Logger logger = Logger.getLogger(HttpAsyncService.class.getName());
+    private static int requestCount = 0;
 
     /**
      * Creates new instance of {@code HttpAsyncServerProtocolHandler}.
@@ -304,7 +305,6 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         }
     }
 
-    //@todo check here
     @Override
     public void requestReceived(
             final NHttpServerConnection conn) throws IOException, HttpException {
@@ -316,11 +316,15 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         final HttpRequest request = conn.getHttpRequest();
 //        final HttpContext context = new BasicHttpContext();  @todo modified
         final HttpContext context = conn.getContext();
-
+        requestCount += 1;
+        logger.log(Level.INFO, "%%%%%%%%%%%%%%%requestLine: {0}", request.getRequestLine());
+        logger.log(Level.INFO, "%%%%%%%%%%%%%%%requestCount: {0}", requestCount);
         context.setAttribute(HttpCoreContext.HTTP_REQUEST, request);
         context.setAttribute(HttpCoreContext.HTTP_CONNECTION, conn);
         this.httpProcessor.process(request, context);
 
+        
+        //@todo can a request state be maintained here and passed to the getRequestHandler?
         final HttpAsyncRequestHandler<Object> requestHandler = getRequestHandler(request);
         final HttpAsyncRequestConsumer<Object> consumer = requestHandler.processRequest(request, context);
         consumer.requestReceived(request);
@@ -743,6 +747,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         }
     }
 
+    //@todo how to check state here??
     @SuppressWarnings("unchecked")
     private HttpAsyncRequestHandler<Object> getRequestHandler(final HttpRequest request) {
         HttpAsyncRequestHandler<Object> handler = null;

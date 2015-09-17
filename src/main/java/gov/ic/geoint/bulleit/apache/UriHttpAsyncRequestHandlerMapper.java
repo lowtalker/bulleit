@@ -3,7 +3,7 @@ package gov.ic.geoint.bulleit.apache;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.annotation.ThreadSafe;
-import org.apache.http.protocol.UriPatternMatcher;
+//import org.apache.http.protocol.UriPatternMatcher;
 import org.apache.http.util.Args;
 
 /**

@@ -51,6 +51,7 @@
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/IOControl.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/HttpAsyncContentProducer.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/BasicAsyncResponseProducer.java
+/home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/UriPatternMatcher.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/NHttpServerIOTarget.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/NullRequestHandler.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/ErrorResponseProducer.java

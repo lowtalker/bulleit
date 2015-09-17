@@ -146,14 +146,16 @@ public class HttpReverseProxy {
 //                                secureConnPool));
 //            } else {
             String proxyPath = new String(
-//                    d.getScheme()
-//                    + "://"
-                     proxyHostURL
-//                    + ":"
-//                    + proxyDomains.getProxyConfig().getSecureHostPort()
-//                    + "/"
+                    //                    d.getScheme()
+                    //                    + "://"
+                    //                     proxyHostURL
+                    //                    + ":"
+                    //                    + proxyDomains.getProxyConfig().getSecureHostPort()
+                    //                     "/"
+                    "*"
                     + d.getPrefix()
-                    + "*");
+            //                    + "*"
+            );
             logger.log(Level.INFO, "proxyPath: {0}", proxyPath);
 
             handlerRegistry.register(proxyPath,

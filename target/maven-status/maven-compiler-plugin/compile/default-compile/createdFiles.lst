@@ -97,6 +97,7 @@ gov/ic/geoint/bulleit/apache/NHttpClientEventHandler.class
 gov/ic/geoint/bulleit/apache/ConnectingIOReactor.class
 gov/ic/geoint/bulleit/apache/SessionRequestHandle.class
 gov/ic/geoint/bulleit/config/ProxyConfig.class
+gov/ic/geoint/bulleit/apache/UriPatternMatcher.class
 gov/ic/geoint/bulleit/apache/HttpAsyncRequestHandlerResolver.class
 gov/ic/geoint/bulleit/apache/NHttpServerEventHandler.class
 gov/ic/geoint/bulleit/apache/BasicAsyncResponseProducer.class
