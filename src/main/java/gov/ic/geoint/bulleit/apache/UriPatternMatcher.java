@@ -27,7 +27,6 @@
  */
 package gov.ic.geoint.bulleit.apache;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,9 +39,9 @@ import org.apache.http.util.Args;
  * <br>
  * Patterns may have three formats:
  * <ul>
- *   <li>{@code *}</li>
- *   <li>{@code *&lt;uri&gt;}</li>
- *   <li>{@code &lt;uri&gt;*}</li>
+ * <li>{@code *}</li>
+ * <li>{@code *&lt;uri&gt;}</li>
+ * <li>{@code &lt;uri&gt;*}</li>
  * </ul>
  * <br>
  * This class can be used to resolve an object matching a particular request
@@ -52,6 +51,9 @@ import org.apache.http.util.Args;
  */
 @ThreadSafe
 public class UriPatternMatcher<T> {
+
+    @GuardedBy("this")
+    private T previousMatch;
 
     @GuardedBy("this")
     private final Map<String, T> map;
@@ -136,6 +138,13 @@ public class UriPatternMatcher<T> {
                     }
                 }
             }
+            //way to handle relative paths
+            if (obj == null && path.startsWith("/")) {
+                obj = previousMatch;
+            }
+        }
+        if (obj != null) {
+            previousMatch = obj;
         }
         return obj;
     }
@@ -146,15 +155,14 @@ public class UriPatternMatcher<T> {
      * @param pattern the pattern
      * @param path the request path
      * @return {@code true} if the request URI matches the pattern,
-     *   {@code false} otherwise.
+     * {@code false} otherwise.
      */
     protected boolean matchUriRequestPattern(final String pattern, final String path) {
         if (pattern.equals("*")) {
             return true;
         } else {
-            return
-            (pattern.endsWith("*") && path.startsWith(pattern.substring(0, pattern.length() - 1))) ||
-            (pattern.startsWith("*") && path.endsWith(pattern.substring(1, pattern.length())));
+            return (pattern.endsWith("*") && path.startsWith(pattern.substring(0, pattern.length() - 1)))
+                    || (pattern.startsWith("*") && path.endsWith(pattern.substring(1, pattern.length())));
         }
     }
 
