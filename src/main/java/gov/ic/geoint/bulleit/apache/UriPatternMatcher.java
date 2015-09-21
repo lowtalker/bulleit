@@ -138,14 +138,14 @@ public class UriPatternMatcher<T> {
                     }
                 }
             }
-            //way to handle relative paths
-            if (obj == null && path.startsWith("/")) {
-                obj = previousMatch;
-            }
+//            //way to handle relative paths
+//            if (obj == null && path.startsWith("/")) {
+//                obj = previousMatch;
+//            }
         }
-        if (obj != null) {
-            previousMatch = obj;
-        }
+//        if (obj != null) {
+//            previousMatch = obj;
+//        }
         return obj;
     }
 
