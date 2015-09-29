@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -50,6 +51,19 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
     public void responseReceived(final HttpResponse response) {
         synchronized (this.httpExchange) {
             logger.log(Level.INFO, "[proxy<-origin] {0} {1}", new Object[]{this.httpExchange.getId(), response.getStatusLine()});
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            String redirectLocation = null;
+            //redirect found
+            if (statusCode >= 300 && statusCode <= 310) {
+                Header[] redirectLocationHeader = response.getHeaders("Location");  //need to do a regex match to handle upper/lower case
+                if (redirectLocationHeader[0].getValue() != null) {
+                    redirectLocation = redirectLocationHeader[0].getValue();
+                    
+                }
+                logger.log(Level.INFO, "redirectLocation: {0}", redirectLocation);
+            }
+
             this.httpExchange.setResponse(response);
             HttpAsyncExchange responseTrigger = this.httpExchange.getResponseTrigger();
             if (responseTrigger != null && !responseTrigger.isCompleted()) {
@@ -66,7 +80,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
         synchronized (this.httpExchange) {
             this.httpExchange.setOriginIOControl(ioctrl);
             // Receive data from the origin
-            ByteBuffer buf = this.httpExchange.getOutBuffer();           
+            ByteBuffer buf = this.httpExchange.getOutBuffer();
             int n = decoder.read(buf);  //decoding from origin happens here.
 
             System.out.println("[proxy<-origin] " + this.httpExchange.getId() + " " + n + " bytes read");
@@ -83,10 +97,8 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
             // If there is some content in the input buffer make sure client
             // output is active
             if (buf.position() > 0) {
-                logger.log(Level.INFO, "@@@@@@@@@@ content decoder type: {0}", decoder.getClass().getName());
-//                logger.log(Level.WARNING, "@@@@@@@@@@ size of buffer array: {0}", buf.array().length);
                 if (this.httpExchange.getClientIOControl() != null) {
-                    this.httpExchange.getClientIOControl().requestOutput();//   -----------------------------------------------------------------------------------
+                    this.httpExchange.getClientIOControl().requestOutput();
                     logger.log(Level.INFO, "[proxy<-origin] {0} request client output", this.httpExchange.getId());
                 }
             }

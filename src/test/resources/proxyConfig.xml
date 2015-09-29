@@ -3,21 +3,13 @@
 <proxyConfig>
     <destinations>
         <destination>
-            <name>atom</name>
-            <destinationUrl>atom.io</destinationUrl>
-            <destinationPort>443</destinationPort>
-            <prefix>/atom</prefix>
+            <name>atomizer</name>
+            <destinationUrl>localhost</destinationUrl>
+            <destinationPort>8181</destinationPort>
+            <prefix>/atomizer</prefix>
             <asyncSupport>true</asyncSupport>
             <scheme>https</scheme>
-        </destination>
-        <destination>
-            <name>twitter</name>
-            <destinationUrl>platform.twitter.com</destinationUrl>
-            <destinationPort>443</destinationPort>
-            <prefix>/twitter</prefix>
-            <asyncSupport>true</asyncSupport>
-            <scheme>https</scheme>
-        </destination>                   
+        </destination>                         
     </destinations>
     <maxThreads>10</maxThreads>
     <maxConnections>10</maxConnections>
@@ -26,6 +18,6 @@
     <requestBufferSize>8192</requestBufferSize>
     <responseBufferSize>8192</responseBufferSize>
     <hostURL>localhost</hostURL>
-    <hostPort>8080</hostPort>
+    <hostPort>80</hostPort>
     <secureHostPort>443</secureHostPort>
 </proxyConfig>

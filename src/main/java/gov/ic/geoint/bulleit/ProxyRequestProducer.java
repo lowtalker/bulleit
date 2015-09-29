@@ -68,7 +68,7 @@ class ProxyRequestProducer implements HttpAsyncRequestProducer {
             int n = encoder.write(buf);
             buf.compact();
             logger.log(Level.INFO, "[proxy->origin] {0} {1} bytes written", new Object[]{this.httpExchange.getId(), n});
-                // If there is space in the buffer and the message has not been
+            // If there is space in the buffer and the message has not been
             // transferred, make sure the client is sending more data
             if (buf.hasRemaining() && !this.httpExchange.isRequestReceived()) {
                 if (this.httpExchange.getClientIOControl() != null) {
@@ -81,7 +81,7 @@ class ProxyRequestProducer implements HttpAsyncRequestProducer {
                     encoder.complete();
                     logger.log(Level.INFO, "[proxy->origin] {0} content fully written", this.httpExchange.getId());
                 } else {
-                        // Input buffer is empty. Wait until the client fills up
+                    // Input buffer is empty. Wait until the client fills up
                     // the buffer
                     ioctrl.suspendOutput();
                     logger.log(Level.INFO, "[proxy->origin] {0} suspend origin output", this.httpExchange.getId());

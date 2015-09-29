@@ -56,18 +56,16 @@ class ProxyResponseProducer implements HttpAsyncResponseProducer {
             HttpEntity entity = this.httpExchange.getResponse().getEntity();
 
             //rewrite embedded links if the response body contains html/text 
-            if (entity != null && entity.getContentType().getValue().contains("html")) {
-//                EmbeddedLinkRewriter elr = new EmbeddedLinkRewriter();
-//                buf = elr.rewriteEmbeddedLinks(httpExchange);
-                try {
-                    buf = EmbeddedLinkRewriter.rewriteEmbeddedLinks(httpExchange, proxyDomains);
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "embedded link rewriter exception {0}", e);
-                }
-            } else {
+//            if (entity != null && entity.getContentType().getValue().contains("html")) {
+//                try {
+//                    buf = EmbeddedLinkRewriter.rewriteEmbeddedLinks(httpExchange, proxyDomains);
+//                } catch (Exception e) {
+//                    logger.log(Level.SEVERE, "embedded link rewriter exception {0}", e);
+//                }
+//            } else {
                 buf = this.httpExchange.getOutBuffer();
                 buf.flip();
-            }
+//            }
 
             int n = encoder.write(buf);
             buf.compact();

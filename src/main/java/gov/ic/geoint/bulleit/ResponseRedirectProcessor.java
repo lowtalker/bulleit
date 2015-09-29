@@ -45,16 +45,9 @@ public class ResponseRedirectProcessor implements HttpResponseInterceptor {
 //                context.setAttribute(HttpClientContext.REDIRECT_LOCATIONS, rl);
 //                Header locationHeader = new BasicHeader("location", redirectUrl.toString());
 //                response.addHeader(locationHeader);
-//
 //            }
-//
-////            HttpEntity entity = response.getEntity();
-////            if (entity != null) {
-////                logger.log(Level.INFO, "****************** response entity content length: {0} *********************", entity.getContentLength());
-////            }
 //        } catch (Exception e) {
 //            logger.log(Level.WARNING, "unable to intercept outgoing request {0}", e);
 //        }
     }
-
 }

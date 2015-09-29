@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.ExceptionLogger;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpException;
@@ -318,7 +319,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         final HttpContext context = conn.getContext();
         requestCount += 1;
         logger.log(Level.INFO, "%%%%%%%%%%%%%%%requestLine: {0}", request.getRequestLine());
-        logger.log(Level.INFO, "%%%%%%%%%%%%%%%requestCount: {0}", requestCount);
+        //Header[] headers = request.getHeaders("location");
         context.setAttribute(HttpCoreContext.HTTP_REQUEST, request);
         context.setAttribute(HttpCoreContext.HTTP_CONNECTION, conn);
         this.httpProcessor.process(request, context);
@@ -331,7 +332,7 @@ public class HttpAsyncService implements NHttpServerEventHandler {
 
         final Incoming incoming = new Incoming(request, requestHandler, consumer, context);
         state.setIncoming(incoming);
-
+        
         if (request instanceof HttpEntityEnclosingRequest) {
 
             // If 100-continue is expected make sure
@@ -747,7 +748,6 @@ public class HttpAsyncService implements NHttpServerEventHandler {
         }
     }
 
-    //@todo how to check state here??
     @SuppressWarnings("unchecked")
     private HttpAsyncRequestHandler<Object> getRequestHandler(final HttpRequest request) {
         HttpAsyncRequestHandler<Object> handler = null;

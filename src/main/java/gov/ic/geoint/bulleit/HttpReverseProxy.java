@@ -15,7 +15,6 @@ import gov.ic.geoint.bulleit.config.Domains;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -26,8 +25,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.config.ConnectionConfig;
-import gov.ic.geoint.bulleit.interceptors.RequestRedirectProcessor;
-import java.io.File;
+import java.net.URI;
 //import org.apache.http.impl.nio.DefaultHttpClientIODispatch;
 //import org.apache.http.impl.nio.DefaultHttpServerIODispatch;
 //import gov.ic.geoint.bulleit.apache.BasicNIOConnFactory;
@@ -86,7 +84,6 @@ public class HttpReverseProxy {
                             new ResponseDate(),
                             new ResponseServer("Test/1.1"),
                             new ResponseContent(),
-                            new ResponseRedirectProcessor(),
                             new ResponseConnControl()});
 
         // Set up HTTP protocol processor for outgoing connections
@@ -96,7 +93,6 @@ public class HttpReverseProxy {
                             new RequestContent(),
                             new RequestTargetHost(),
                             new RequestConnControl(),
-                            new RequestRedirectProcessor(),
                             new RequestUserAgent("Test/1.1"),
                             new RequestExpectContinue(true)});
 
@@ -118,22 +114,22 @@ public class HttpReverseProxy {
         UriHttpAsyncRequestHandlerMapper handlerRegistry
                 = new UriHttpAsyncRequestHandlerMapper();
         Domains proxyDomains = Domains.newInstance();
-        String proxyHostURL = proxyDomains.getProxyConfig().getHostURL()
-                + ":"
-                + proxyDomains.getProxyConfig().getSecureHostPort();
+//        String proxyHostURL = proxyDomains.getProxyConfig().getHostURL()
+//                + ":"
+//                + proxyDomains.getProxyConfig().getSecureHostPort();
 
-//        URI uri = new URI("https://atom.io");
-//        System.out.println("host: " + uri.getHost());
-//        HttpHost secureHost = new HttpHost(uri.getHost(), 443, "https");
-//        
-////        handlerRegistry.register("*", new ProxyRequestHandler(secureHost, asyncRequester, connPool));
-//        
-//        URI twitterUri = new URI("https://platform.twitter.com/");
-//        HttpHost twitterSecureHost = new HttpHost(twitterUri.getHost(), 443, "https");
-//        
-//        handlerRegistry.register("*", new ProxyRequestHandler(twitterSecureHost, asyncRequester, connPool));
-        for (Destination d : proxyDomains.getDestinations()) {
-            HttpHost target = new HttpHost(d.getDestinationUrl(), new Integer(d.getDestinationPort()), d.getScheme());
+        URI uri = new URI("https://atom.io");
+        HttpHost secureHost = new HttpHost(uri.getHost(), 443, "https");
+        
+        handlerRegistry.register("*", new ProxyRequestHandler(secureHost, asyncRequester, connPool));
+
+
+        /**
+         * add proxy target domains from the config file
+         * 
+         */
+//        for (Destination d : proxyDomains.getDestinations()) {
+//            HttpHost target = new HttpHost(d.getDestinationUrl(), new Integer(d.getDestinationPort()), d.getScheme());
 //            if (target.getSchemeName().equalsIgnoreCase("https")) {
 //                handlerRegistry.register(d.getScheme()
 //                        + "://"
@@ -145,27 +141,26 @@ public class HttpReverseProxy {
 //                                asyncRequester,
 //                                secureConnPool));
 //            } else {
-            String proxyPath = new String(
-                    //                    d.getScheme()
-                    //                    + "://"
-                    //                     proxyHostURL
-                    //                    + ":"
-                    //                    + proxyDomains.getProxyConfig().getSecureHostPort()
-                    //                     "/"
-                    "*"
-                    + d.getPrefix()
-            //                    + "*"
-            );
-            logger.log(Level.INFO, "proxyPath: {0}", proxyPath);
-
-            handlerRegistry.register(proxyPath,
-                    new ProxyRequestHandler(
-                            target,
-                            asyncRequester,
-                            connPool));
+//            String proxyPath = new String(
+//                                        d.getScheme()
+//                                        + "://"
+//                                         proxyHostURL
+//                                        + ":"
+//                                        + proxyDomains.getProxyConfig().getSecureHostPort()
+//                                         "/"
+//                    "*"
+//                    + d.getPrefix()
+//                                + "*"
+//            );
+//            logger.log(Level.INFO, "proxyPath: {0}", proxyPath);
+//
+//            handlerRegistry.register(proxyPath,
+//                    new ProxyRequestHandler(
+//                            target,
+//                            asyncRequester,
+//                            connPool));
 //            }
-        }
-
+//        }
         ProxyServiceHandler serviceHandler
                 = new ProxyServiceHandler(
                         inhttpproc,
