@@ -12,9 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
+import org.apache.http.StatusLine;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.apache.http.impl.nio.DefaultNHttpClientConnection;
@@ -33,47 +35,51 @@ import org.apache.http.protocol.HttpContext;
  *
  */
 class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchange> {
-
+    
     private final ProxyHttpExchange httpExchange;
     private static final Logger logger = Logger.getLogger(ProxyResponseConsumer.class.getName());
     private volatile boolean completed;
-
+    
     public ProxyResponseConsumer(final ProxyHttpExchange httpExchange) {
         super();
         this.httpExchange = httpExchange;
     }
-
+    
     @Override
     public void close() throws IOException {
     }
-
+    
     @Override
     public void responseReceived(final HttpResponse response) {
         synchronized (this.httpExchange) {
             logger.log(Level.INFO, "[proxy<-origin] {0} {1}", new Object[]{this.httpExchange.getId(), response.getStatusLine()});
             int statusCode = response.getStatusLine().getStatusCode();
-
+            
             String redirectLocation = null;
             //redirect found
             if (statusCode >= 300 && statusCode <= 310) {
                 Header[] redirectLocationHeader = response.getHeaders("Location");  //need to do a regex match to handle upper/lower case
                 if (redirectLocationHeader[0].getValue() != null) {
                     redirectLocation = redirectLocationHeader[0].getValue();
+                    HttpHost h = new HttpHost(redirectLocation);
+                    this.httpExchange.setTarget(h);
+                    StatusLine sl = response.getStatusLine();
+                    
                     
                 }
                 logger.log(Level.INFO, "redirectLocation: {0}", redirectLocation);
             }
-
+            
             this.httpExchange.setResponse(response);
             HttpAsyncExchange responseTrigger = this.httpExchange.getResponseTrigger();
             if (responseTrigger != null && !responseTrigger.isCompleted()) {
                 logger.log(Level.INFO, "[client<-proxy] {0} response triggered", this.httpExchange.getId());
-
+                
                 responseTrigger.submitResponse(new ProxyResponseProducer(this.httpExchange));
             }
         }
     }
-
+    
     @Override
     public void consumeContent(
             final ContentDecoder decoder, final IOControl ioctrl) throws IOException {
@@ -102,10 +108,10 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
                     logger.log(Level.INFO, "[proxy<-origin] {0} request client output", this.httpExchange.getId());
                 }
             }
-
+            
         }
     }
-
+    
     @Override
     public void responseCompleted(final HttpContext context) {
         synchronized (this.httpExchange) {
@@ -121,7 +127,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
             }
         }
     }
-
+    
     @Override
     public void failed(final Exception ex) {
         synchronized (this.httpExchange) {
@@ -145,7 +151,7 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
             }
         }
     }
-
+    
     @Override
     public boolean cancel() {
         synchronized (this.httpExchange) {
@@ -156,20 +162,20 @@ class ProxyResponseConsumer implements HttpAsyncResponseConsumer<ProxyHttpExchan
             return true;
         }
     }
-
+    
     @Override
     public ProxyHttpExchange getResult() {
         return this.httpExchange;
     }
-
+    
     @Override
     public Exception getException() {
         return null;
     }
-
+    
     @Override
     public boolean isDone() {
         return this.completed;
     }
-
+    
 }
