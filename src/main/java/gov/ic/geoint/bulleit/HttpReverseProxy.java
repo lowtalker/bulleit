@@ -10,7 +10,6 @@ import gov.ic.geoint.bulleit.apache.HttpAsyncRequester;
 import gov.ic.geoint.bulleit.apache.IOEventDispatch;
 import gov.ic.geoint.bulleit.apache.ListeningIOReactor;
 import gov.ic.geoint.bulleit.apache.UriHttpAsyncRequestHandlerMapper;
-import gov.ic.geoint.bulleit.config.Destination;
 import gov.ic.geoint.bulleit.config.Domains;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -84,6 +83,7 @@ public class HttpReverseProxy {
                             new ResponseDate(),
                             new ResponseServer("Test/1.1"),
                             new ResponseContent(),
+                            new ResponseProxyHeaders(),
                             new ResponseConnControl()});
 
         // Set up HTTP protocol processor for outgoing connections
@@ -94,6 +94,7 @@ public class HttpReverseProxy {
                             new RequestTargetHost(),
                             new RequestConnControl(),
                             new RequestUserAgent("Test/1.1"),
+                            new RequestProxyHeaders(),
                             new RequestExpectContinue(true)});
 
         ProxyClientProtocolHandler clientHandler

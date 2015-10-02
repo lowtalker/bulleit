@@ -32,6 +32,7 @@ gov/ic/geoint/bulleit/apache/SSLNHttpClientConnectionFactory.class
 gov/ic/geoint/bulleit/apache/HttpAsyncService.class
 gov/ic/geoint/bulleit/apache/DefaultHttpServerIODispatch.class
 gov/ic/geoint/bulleit/apache/IOEventDispatch.class
+gov/ic/geoint/bulleit/RequestProxyHeaders.class
 gov/ic/geoint/bulleit/apache/HttpAsyncClientExchangeHandler.class
 gov/ic/geoint/bulleit/apache/NHttpConnection.class
 gov/ic/geoint/bulleit/apache/SSLNHttpServerConnectionFactory.class
@@ -62,6 +63,7 @@ gov/ic/geoint/bulleit/ProxyConnPool.class
 gov/ic/geoint/bulleit/apache/HttpAsyncService$HttpAsyncRequestHandlerResolverAdapter.class
 gov/ic/geoint/bulleit/apache/HttpAsyncRequestProducer.class
 gov/ic/geoint/bulleit/apache/AbstractNIOConnPool.class
+gov/ic/geoint/bulleit/ResponseProxyHeaders.class
 gov/ic/geoint/bulleit/apache/DefaultNHttpServerConnection.class
 gov/ic/geoint/bulleit/apache/AbstractMultiworkerIOReactor.class
 gov/ic/geoint/bulleit/apache/NHttpConnectionFactory.class

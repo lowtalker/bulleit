@@ -3,6 +3,7 @@
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/BasicNIOConnPool.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/ProxyHttpExchange.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/IOEventDispatch.java
+/home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/ResponseProxyHeaders.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/HttpAsyncExchange.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/BaseIOReactor.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/SSLNHttpServerConnectionFactory.java
@@ -58,6 +59,7 @@
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/EntityAsyncContentProducer.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/DefaultHttpServerIODispatch.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/DefaultNHttpClientConnection.java
+/home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/RequestProxyHeaders.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/AbstractNIOConnPool.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/ConnectingIOReactor.java
 /home/ted_przyzycki/Projects/bulleit/src/main/java/gov/ic/geoint/bulleit/apache/SSLNHttpClientConnectionFactory.java
